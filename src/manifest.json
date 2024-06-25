@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Chrome Extension with React & Webpack",
-  "description": "A chrome extension boilerplate built with React 17, Webpack 5, and Webpack Dev Server 4",
+  "name": "Band PDF Export",
+  "description": "A Chrome extension that exports all posts, comments and media of a Band into one PDF file.",
   "options_page": "options.html",
   "background": { "service_worker": "background.bundle.js" },
   "action": {

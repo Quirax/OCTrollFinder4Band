@@ -1,11 +1,11 @@
 {
-  "name": "chrome-extension-boilerplate-react",
-  "version": "5.0.4",
-  "description": "A chrome extension boilerplate built with React 18, Webpack 5, and Webpack Dev Server 4",
+  "name": "Band PDF Export",
+  "version": "1.0.0",
+  "description": "A Chrome extension that exports all posts, comments and media of a Band into one PDF file.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lxieyang/chrome-extension-boilerplate-react.git"
+    "url": "https://github.com/Quirax/band-pdf-export.git"
   },
   "scripts": {
     "build": "node utils/build.js",
@@ -42,6 +42,7 @@
     "fs-extra": "^11.1.0",
     "html-loader": "^4.2.0",
     "html-webpack-plugin": "^5.5.0",
+    "node-sass": "^9.0.0",
     "prettier": "^2.8.3",
     "react-refresh": "^0.14.0",
     "react-refresh-typescript": "^2.0.7",
