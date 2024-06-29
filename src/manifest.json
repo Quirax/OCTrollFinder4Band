@@ -13,7 +13,7 @@
     },
     "content_scripts": [
         {
-            "matches": ["http://*/*", "https://*/*", "<all_urls>"],
+            "matches": ["*://band.us/band/*"],
             "js": ["contentScript.bundle.js"],
             "css": ["content.styles.css"]
         }
