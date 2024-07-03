@@ -54,12 +54,19 @@ var options = {
             'Content',
             'index.js'
         ),
+        injection: path.join(
+            __dirname,
+            'src',
+            'pages',
+            'Injection',
+            'index.js'
+        ),
         devtools: path.join(__dirname, 'src', 'pages', 'Devtools', 'index.js'),
         panel: path.join(__dirname, 'src', 'pages', 'Panel', 'index.jsx'),
         print: path.join(__dirname, 'src', 'pages', 'Print', 'index.jsx'),
     },
     chromeExtensionBoilerplate: {
-        notHotReload: ['background', 'contentScript', 'devtools'],
+        notHotReload: ['background', 'contentScript', 'devtools', 'injection'],
     },
     output: {
         filename: '[name].bundle.js',
