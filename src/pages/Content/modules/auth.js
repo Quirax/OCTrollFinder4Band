@@ -1,5 +1,6 @@
 import { timestamp } from './util';
 import $ from 'jquery';
+import _ from 'underscore';
 
 const extendAuth = (auth) =>
     _.extend(auth, {
@@ -9,6 +10,26 @@ const extendAuth = (auth) =>
                 this.isSignedUser() &&
                 this.isInAppWebViewToken()
             );
+        },
+        createMd: function (str) {
+            if (!this || !this.makeMd) return null;
+            window.$.browser.msie ||
+                window.$.browser.msedge ||
+                (str = str.replace(/'/gi, '%27'));
+            var str_refined = str
+                .replace(/^.*?:\/\//g, '')
+                .replace(/^[^/]+/g, '');
+            return (
+                this.makeMd(
+                    str_refined,
+                    this.isInAppWebViewSignedUserWithToken()
+                ) || {}
+            ).md;
+        },
+        akey: function () {
+            return this.isInAppWebViewSignedUserWithToken()
+                ? '3ef815416f775098fe977004015c6193'
+                : 'bbc59b0b5f7a1c6efe950f6236ccda35';
         },
     });
 
