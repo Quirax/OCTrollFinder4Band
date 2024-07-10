@@ -3,6 +3,7 @@ import { printLine } from './print';
 import { getTimezone } from './timezone';
 import moment from 'moment-timezone';
 import { bandNo } from './util';
+import * as message from './message';
 
 let isLoaded = false;
 
@@ -46,11 +47,14 @@ const main = {
             limit: limit || 20,
             after: after,
         }),
+    message: message,
 };
 
 const init = async () => {
     main.tz = await getTimezone();
     main.auth = await getAuth();
+
+    message.addListener((message) => console.log(message));
 
     isLoaded = true;
 };

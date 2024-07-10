@@ -14,7 +14,7 @@
     "content_scripts": [
         {
             "matches": ["*://band.us/*"],
-            "js": ["injection.bundle.js"],
+            "js": ["contentScript.bundle.js"],
             "css": ["content.styles.css"]
         }
     ],
@@ -25,10 +25,10 @@
             "matches": []
         },
         {
-            "resources": ["contentScript.bundle.js"],
+            "resources": ["injectScript.bundle.js"],
             "matches": ["*://band.us/*"]
         }
     ],
-    "permissions": ["scripting"],
+    "permissions": ["scripting", "tabs"],
     "host_permissions": ["*://band.us/*"]
 }

@@ -1,37 +1,16 @@
-import { getMain } from './modules/main';
-import { printLine } from './modules/print';
+/**
+ * injectScript - Inject internal script to available access to the `window`
+ *
+ * @param  {type} file_path Local path of the internal script.
+ * @param  {type} tag The tag as string, where the script will be append (default: 'body').
+ * @see    {@link http://stackoverflow.com/questions/20499994/access-window-variable-from-content-script}
+ */
+function injectScript(file_path, tag) {
+    var node = document.getElementsByTagName(tag)[0];
+    var script = document.createElement('script');
+    script.setAttribute('type', 'text/javascript');
+    script.setAttribute('src', file_path);
+    node.appendChild(script);
+}
 
-// Must reload extension for modifications to take effect.
-
-// printLine("Using the 'printLine' function from the Print Module");
-
-const onEnterBandPage = async () => {
-    const main = await getMain();
-
-    printLine(await main.getPosts());
-};
-
-const onLeaveBandPage = async () => {};
-
-const isBandPage = (href) => {
-    if (href.match(/band.us\/band\//)) onEnterBandPage();
-    else onLeaveBandPage();
-};
-
-// ref: https://stackoverflow.com/a/46428962
-const observeUrlChange = () => {
-    let oldHref = document.location.href;
-    const body = document.querySelector('body');
-    const observer = new MutationObserver((mutations) => {
-        if (oldHref !== document.location.href) {
-            oldHref = document.location.href;
-            /* Changed ! your code here */
-            isBandPage(oldHref);
-        }
-    });
-    observer.observe(body, { childList: true, subtree: true });
-
-    isBandPage(oldHref);
-};
-
-window.onload = observeUrlChange;
+injectScript(chrome.runtime.getURL('injectScript.bundle.js'), 'body');
