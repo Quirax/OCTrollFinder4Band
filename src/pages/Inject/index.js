@@ -8,7 +8,11 @@ import { printLine } from './modules/print';
 const onEnterBandPage = async () => {
     const main = await getMain();
 
-    main.message.send(main.message.Destination.Content, await main.getPosts());
+    main.messenger.send(
+        main.messenger.Destination.Content,
+        await main.getPosts(),
+        (message) => console.log('RESPONSE', message)
+    );
 };
 
 const onLeaveBandPage = async () => {};

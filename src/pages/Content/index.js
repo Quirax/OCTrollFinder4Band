@@ -1,3 +1,9 @@
+import {
+    getBrowserMessenger,
+    Destination,
+    getWindowMessenger,
+} from '../../modules/messenger';
+
 /**
  * injectScript - Inject internal script to available access to the `window`
  *
@@ -13,4 +19,15 @@ function injectScript(file_path, tag) {
     node.appendChild(script);
 }
 
-injectScript(chrome.runtime.getURL('injectScript.bundle.js'), 'body');
+const browser = window.browser || window.chrome;
+
+injectScript(browser.runtime.getURL('injectScript.bundle.js'), 'body');
+
+const messenger = {
+    toInject: getWindowMessenger(Destination.Content),
+    toOther: getBrowserMessenger(Destination.Content),
+};
+
+messenger.toInject.addListener((message, sendResponse) => {
+    sendResponse(`Gotcha! ${JSON.stringify(message)}`);
+});
