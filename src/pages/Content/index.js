@@ -2,6 +2,7 @@ import {
     getBrowserMessenger,
     Destination,
     getWindowMessenger,
+    initIntermediateMessenger,
 } from '../../modules/messenger';
 
 /**
@@ -23,11 +24,15 @@ const browser = window.browser || window.chrome;
 
 injectScript(browser.runtime.getURL('injectScript.bundle.js'), 'body');
 
+const ME = Destination.Content;
+
 const messenger = {
-    toInject: getWindowMessenger(Destination.Content),
-    toOther: getBrowserMessenger(Destination.Content),
+    toInject: getWindowMessenger(ME),
+    toOther: getBrowserMessenger(ME),
 };
 
 messenger.toInject.addListener((message, sendResponse) => {
-    sendResponse(`Gotcha! ${JSON.stringify(message)}`);
+    sendResponse(`RESPONSE[Inject]: ${JSON.stringify(message)}`);
 });
+
+initIntermediateMessenger(ME);

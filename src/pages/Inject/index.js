@@ -10,8 +10,14 @@ const onEnterBandPage = async () => {
 
     main.messenger.send(
         main.messenger.Destination.Content,
-        await main.getPosts(),
-        (message) => console.log('RESPONSE', message)
+        'Hello, Content!',
+        (message) => console.log('RESPONSE >>', message)
+    );
+
+    main.messenger.send(
+        main.messenger.Destination.Background,
+        'Hello, Background!',
+        (message) => console.log('RESPONSE >>', message)
     );
 };
 

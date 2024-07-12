@@ -47,7 +47,7 @@ const main = {
             limit: limit || 20,
             after: after,
         }),
-    messenger: getWindowMessenger(Destination.Inject),
+    messenger: getWindowMessenger(Destination.Inject, Destination.Content),
 };
 
 const init = async () => {
