@@ -70,6 +70,7 @@ export const getWindowMessenger = (me, via) => {
                     via: via,
                     ts: packet.ts,
                     message: message,
+                    isResponse: true,
                 })
             );
         });
@@ -93,13 +94,14 @@ export const getWindowMessenger = (me, via) => {
             ...packet,
             via: via,
             ts: ts,
+            isResponse: false,
         });
     };
 
     return generateMessenger(me, addListener, sendMessage);
 };
 
-export const getBrowserMessenger = (me) => {
+export const getBrowserMessenger = (me, via) => {
     // service worker에서 사용하는 경우, window 객체 대신 self 객체를 사용
     // ref: https://stackoverflow.com/a/73785852
     const browser = self.browser || self.chrome;
@@ -110,6 +112,7 @@ export const getBrowserMessenger = (me) => {
                 sendResponse({
                     from: packet.to,
                     to: packet.from,
+                    via: via,
                     message: message,
                 });
             });
@@ -118,7 +121,17 @@ export const getBrowserMessenger = (me) => {
         });
 
     const sendMessage = (packet, callback) =>
-        browser.runtime.sendMessage(packet, (resp) => callback(resp.message));
+        browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const tab = tabs[0];
+            browser.tabs.sendMessage(
+                tab.id,
+                {
+                    ...packet,
+                    via: via,
+                },
+                (resp) => callback(resp.message)
+            );
+        });
 
     return generateMessenger(me, addListener, sendMessage);
 };
@@ -132,11 +145,13 @@ export const initIntermediateMessenger = (me) => {
         if (typeof packet !== 'object') return;
         if (packet.via !== me) return;
         if (packet.to === me) return;
+        if (packet.isResponse) return;
 
         browser.runtime.sendMessage(packet, (resp) => {
             window.postMessage({
                 ...resp,
                 ts: packet.ts,
+                isResponse: true,
             });
         });
     });
@@ -154,6 +169,7 @@ export const initIntermediateMessenger = (me) => {
             if (typeof resp !== 'object') return;
             if (resp.to !== packet.from) return;
             if (resp.from !== packet.to) return;
+            if (!resp.isResponse) return;
             if (resp.ts !== ts) return;
 
             sendResponse(resp);
@@ -162,6 +178,9 @@ export const initIntermediateMessenger = (me) => {
         window.postMessage({
             ...packet,
             ts: ts,
+            isResponse: false,
         });
+
+        return true;
     });
 };

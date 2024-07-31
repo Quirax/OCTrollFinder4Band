@@ -54,10 +54,6 @@ const init = async () => {
     main.tz = await getTimezone();
     main.auth = await getAuth();
 
-    main.messenger.addListener((message, sendResponse) => {
-        //
-    });
-
     isLoaded = true;
 };
 

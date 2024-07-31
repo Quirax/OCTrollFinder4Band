@@ -1,9 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from '../../assets/img/logo.svg';
-import Greetings from '../../containers/Greetings/Greetings';
 import './Popup.css';
+import { Destination, getBrowserMessenger } from '../../modules/messenger';
 
 const Popup = () => {
+    const [message, setMessage] = useState('');
+
+    useEffect(() => {
+        const messenger = getBrowserMessenger(
+            Destination.Popup,
+            Destination.Content
+        );
+
+        messenger.send(Destination.Inject, 'getPosts', (msg) => {
+            console.log(msg);
+            setMessage(JSON.stringify(msg));
+        });
+    }, []);
+
     return (
         <div className="App">
             <header className="App-header">
@@ -18,7 +32,7 @@ const Popup = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    Learn React!
+                    {message}
                 </a>
             </header>
         </div>

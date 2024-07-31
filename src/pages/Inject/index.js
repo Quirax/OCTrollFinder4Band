@@ -8,17 +8,15 @@ import { printLine } from './modules/print';
 const onEnterBandPage = async () => {
     const main = await getMain();
 
-    main.messenger.send(
-        main.messenger.Destination.Content,
-        'Hello, Content!',
-        (message) => console.log('RESPONSE >>', message)
-    );
-
-    main.messenger.send(
-        main.messenger.Destination.Background,
-        'Hello, Background!',
-        (message) => console.log('RESPONSE >>', message)
-    );
+    main.messenger.addListener(async (message, sendResponse) => {
+        switch (message) {
+            case 'getPosts':
+                const posts = await main.getPosts();
+                sendResponse(posts);
+            default:
+                sendResponse('UNKNOWN requests');
+        }
+    });
 };
 
 const onLeaveBandPage = async () => {};
