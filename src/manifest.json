@@ -13,7 +13,7 @@
     },
     "content_scripts": [
         {
-            "matches": ["http://*/*", "https://*/*", "<all_urls>"],
+            "matches": ["*://band.us/*"],
             "js": ["contentScript.bundle.js"],
             "css": ["content.styles.css"]
         }
@@ -23,6 +23,12 @@
         {
             "resources": ["content.styles.css", "icon-128.png", "icon-34.png"],
             "matches": []
+        },
+        {
+            "resources": ["injectScript.bundle.js"],
+            "matches": ["*://band.us/*"]
         }
-    ]
+    ],
+    "permissions": ["scripting", "tabs"],
+    "host_permissions": ["*://band.us/*"]
 }
