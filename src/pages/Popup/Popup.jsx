@@ -4,38 +4,45 @@ import './Popup.css';
 import { Destination, getBrowserMessenger } from '../../modules/messenger';
 
 const Popup = () => {
+    const messenger = getBrowserMessenger(
+        Destination.Popup,
+        Destination.Content
+    );
+
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        const messenger = getBrowserMessenger(
-            Destination.Popup,
-            Destination.Content
-        );
-
-        messenger.send(Destination.Inject, 'getPosts', (msg) => {
-            console.log(msg);
-            setMessage(JSON.stringify(msg));
-        });
+        // messenger.send(Destination.Inject, 'getPosts', (msg) => {
+        //     console.log(msg);
+        //     setMessage(JSON.stringify(msg));
+        // });
     }, []);
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>
-                    Edit <code>src/pages/Popup/Popup.jsx</code> and save to
-                    reload.
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    {message}
-                </a>
+        <>
+            <header>
+                <img src={logo} />
+                <h1>Band PDF Export</h1>
             </header>
-        </div>
+            <main>
+                <details>
+                    <summary>세부 조건</summary>
+                    <p>
+                        <div>
+                            <input type="checkbox" id="date_constraints" />
+                            <label for="date_constraints">
+                                특정 기간 내 게시물만 내보내기
+                            </label>
+                        </div>
+                        <div>
+                            기간: <input type="date" id="date_start" /> ~{' '}
+                            <input type="date" id="date_end" />
+                        </div>
+                    </p>
+                </details>
+                <button>현재 밴드를 PDF로 내보내기</button>
+            </main>
+        </>
     );
 };
 
