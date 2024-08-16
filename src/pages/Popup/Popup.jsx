@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import logo from '../../assets/img/logo.svg';
 import './Popup.scss';
 import { Destination, getBrowserMessenger } from '../../modules/messenger';
+import { DateConstraints } from './Criteria';
 
 const Popup = () => {
     const messenger = getBrowserMessenger(
@@ -27,18 +28,7 @@ const Popup = () => {
             <main>
                 <details>
                     <summary>세부 조건</summary>
-                    <p>
-                        <div className="criteria_label">
-                            <input type="checkbox" id="date_constraints" />
-                            <label for="date_constraints">
-                                특정 기간 내 게시물만 내보내기
-                            </label>
-                        </div>
-                        <div className="criteria_option">
-                            기간: <input type="date" id="date_start" /> ~{' '}
-                            <input type="date" id="date_end" />
-                        </div>
-                    </p>
+                    <DateConstraints />
                 </details>
                 <button>현재 밴드를 PDF로 내보내기</button>
             </main>
