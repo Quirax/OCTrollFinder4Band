@@ -1,9 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { classNames, makeId } from '../../modules/util';
 
-const Criteria = ({ label, option }) => {
+/**
+ * @param {{
+ *   label: string,
+ *   option: (isEnabled: boolean) => React.JSX.Element,
+ *   criteriaRegistry: import('./Popup').CriteriaRegistry[],
+ *   get: () => object
+ * }}
+ */
+const Criteria = ({ label, option, criteriaRegistry, get }) => {
     const checkboxId = 'criteria_' + makeId(10);
     const [isEnabled, setIsEnabled] = useState(false);
+
+    const registry = { isEnabled: () => isEnabled, get };
+
+    useEffect(() => {
+        criteriaRegistry.push(registry);
+
+        let idx;
+
+        return () =>
+            (idx = criteriaRegistry.findIndex((v) => v === registry)) > -1 &&
+            criteriaRegistry.splice(idx, 1);
+    }, [isEnabled]);
 
     return (
         <div className="criteria">
@@ -35,9 +55,22 @@ const formatDate = (date) =>
         .toString()
         .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
 
-export const DateConstraints = () => {
+/**
+ * @param {{
+ *   criteriaRegistry: import('./Popup').CriteriaRegistry[]
+ * }}
+ */
+
+export const DateConstraints = ({ criteriaRegistry }) => {
     const [dateStart, setDateStart] = useState(formatDate(new Date()));
     const [dateEnd, setDateEnd] = useState(formatDate(new Date()));
+
+    const get = () => ({
+        dateConstraints: {
+            start: dateStart,
+            end: dateEnd,
+        },
+    });
 
     const Option = (isEnabled) => (
         <>
@@ -61,5 +94,12 @@ export const DateConstraints = () => {
         </>
     );
 
-    return <Criteria label="특정 기간 내 게시물만 내보내기" option={Option} />;
+    return (
+        <Criteria
+            criteriaRegistry={criteriaRegistry}
+            get={get}
+            label="특정 기간 내 게시물만 내보내기"
+            option={Option}
+        />
+    );
 };

@@ -4,6 +4,13 @@ import './Popup.scss';
 import { Destination, getBrowserMessenger } from '../../modules/messenger';
 import { DateConstraints } from './Criteria';
 
+/**
+ * @typedef CriteriaRegistry
+ * @type {object}
+ * @property {() => boolean} isEnabled
+ * @property {() => object} get
+ */
+
 const Popup = () => {
     const messenger = getBrowserMessenger(
         Destination.Popup,
@@ -11,6 +18,19 @@ const Popup = () => {
     );
 
     const [message, setMessage] = useState('');
+
+    /** @type {CriteriaRegistry[]} */
+    const registry = [];
+
+    const onStart = () => {
+        let criteria = registry.reduce(
+            (curr, reg) =>
+                console.log(reg.isEnabled()) ||
+                (reg.isEnabled() ? Object.assign(curr, reg.get()) : curr),
+            {}
+        );
+        console.log(criteria);
+    };
 
     useEffect(() => {
         // messenger.send(Destination.Inject, 'getPosts', (msg) => {
@@ -28,9 +48,9 @@ const Popup = () => {
             <main>
                 <details>
                     <summary>세부 조건</summary>
-                    <DateConstraints />
+                    <DateConstraints criteriaRegistry={registry} />
                 </details>
-                <button>현재 밴드를 PDF로 내보내기</button>
+                <button onClick={onStart}>현재 밴드를 PDF로 내보내기</button>
             </main>
         </>
     );
