@@ -16,6 +16,11 @@ export const Prepare = ({ transition }) => {
 
     return (
         <>
+            <div>
+                {/* TODO: get data from Inject */}
+                <img src="https://coresos-phinf.pstatic.net/a/34j97h/6_he1Ud018svctfwtlkzqahzf_rvsjem.jpg?type=cover_a264" />
+                <h2>우리의 세계는 0과 1로 이뤄졌다 ::Betatest on</h2>
+            </div>
             <details>
                 <summary>세부 조건</summary>
                 <DateConstraints criteriaRegistry={registry} />
