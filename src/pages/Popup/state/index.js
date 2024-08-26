@@ -10,8 +10,8 @@ export const State = createEnum(
     'Completed'
 );
 
-export const ViewByState = () => {
-    const [state, setState] = useState([State.Prepare, {}]);
+export const ViewByState = ({ defaultState }) => {
+    const [state, setState] = useState([defaultState || State.Prepare, {}]);
 
     const transition = useCallback((state, args) => {
         setState([state, args]);
