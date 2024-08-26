@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import logo from '../../assets/img/logo.svg';
 import './Popup.scss';
 import { Destination, getBrowserMessenger } from '../../modules/messenger';
-import { DateConstraints } from './Criteria';
+import { Prepare } from './Prepare';
+import { createEnum } from '../../modules/util';
+
+const State = createEnum('Non_Band', 'Prepare', 'Processing', 'Completed');
 
 /**
  * @typedef CriteriaRegistry
@@ -19,18 +22,7 @@ const Popup = () => {
 
     const [message, setMessage] = useState('');
 
-    /** @type {CriteriaRegistry[]} */
-    const registry = [];
-
-    const onStart = () => {
-        let criteria = registry.reduce(
-            (curr, reg) =>
-                console.log(reg.isEnabled()) ||
-                (reg.isEnabled() ? Object.assign(curr, reg.get()) : curr),
-            {}
-        );
-        console.log(criteria);
-    };
+    const [state, setState] = useState(State.Prepare);
 
     useEffect(() => {
         // messenger.send(Destination.Inject, 'getPosts', (msg) => {
@@ -46,11 +38,14 @@ const Popup = () => {
                 <h1>Band PDF Export</h1>
             </header>
             <main>
-                <details>
-                    <summary>세부 조건</summary>
-                    <DateConstraints criteriaRegistry={registry} />
-                </details>
-                <button onClick={onStart}>현재 밴드를 PDF로 내보내기</button>
+                {(() => {
+                    switch (state) {
+                        case State.Prepare:
+                            return <Prepare />;
+                        default:
+                            return <></>;
+                    }
+                })()}
             </main>
         </>
     );

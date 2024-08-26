@@ -15,3 +15,6 @@ export function makeId(length) {
 }
 
 export const classNames = (...args) => args.map((v) => v || '').join(' ');
+
+export const createEnum = (...args) =>
+    Object.freeze(Object.fromEntries(args.map((v) => [v, v])));
