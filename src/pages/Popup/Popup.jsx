@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import logo from '../../assets/img/logo.svg';
 import './Popup.scss';
-import { Destination, getBrowserMessenger } from '../../modules/messenger';
 import { State, ViewByState } from './state';
 import { useBrowser, useMessenger } from './util';
 
