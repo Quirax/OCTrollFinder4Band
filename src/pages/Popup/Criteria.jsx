@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { classNames, makeId } from '../../modules/util';
 
 /**
  * @param {{
  *   label: string,
- *   option: (isEnabled: boolean) => React.JSX.Element,
+ *   children: React.JSX.Element,
  *   criteriaRegistry: import('./Popup').CriteriaRegistry[],
- *   get: () => object
+ *   value: object
  * }}
  */
-const Criteria = ({ label, option, criteriaRegistry, get }) => {
+const Criteria = ({ label, children, criteriaRegistry, value }) => {
     const checkboxId = 'criteria_' + makeId(10);
     const [isEnabled, setIsEnabled] = useState(false);
 
-    const registry = { isEnabled: () => isEnabled, get };
+    const registry = { get: () => (isEnabled ? value : {}) };
 
     useEffect(() => {
         criteriaRegistry.push(registry);
@@ -23,7 +23,7 @@ const Criteria = ({ label, option, criteriaRegistry, get }) => {
         return () =>
             (idx = criteriaRegistry.findIndex((v) => v === registry)) > -1 &&
             criteriaRegistry.splice(idx, 1);
-    }, [isEnabled]);
+    }, [isEnabled, value]);
 
     return (
         <div className="criteria">
@@ -37,14 +37,7 @@ const Criteria = ({ label, option, criteriaRegistry, get }) => {
                 />
                 <label htmlFor={checkboxId}>{label}</label>
             </div>
-            <div
-                className={classNames(
-                    'criteria_option',
-                    !isEnabled && 'disabled'
-                )}
-            >
-                {option(isEnabled)}
-            </div>
+            {isEnabled && <div className="criteria_option">{children}</div>}
         </div>
     );
 };
@@ -65,20 +58,21 @@ export const DateConstraints = ({ criteriaRegistry }) => {
     const [dateStart, setDateStart] = useState(formatDate(new Date()));
     const [dateEnd, setDateEnd] = useState(formatDate(new Date()));
 
-    const get = () => ({
-        dateConstraints: {
-            start: dateStart,
-            end: dateEnd,
-        },
-    });
-
-    const Option = (isEnabled) => (
-        <>
+    return (
+        <Criteria
+            criteriaRegistry={criteriaRegistry}
+            value={{
+                dateConstraints: {
+                    start: dateStart,
+                    end: dateEnd,
+                },
+            }}
+            label="특정 기간 내 게시물만 내보내기"
+        >
             기간:{' '}
             <input
                 type="date"
                 id="date_start"
-                disabled={!isEnabled}
                 value={dateStart}
                 onChange={(e) => setDateStart(e.target.value)}
             />
@@ -86,20 +80,10 @@ export const DateConstraints = ({ criteriaRegistry }) => {
             <input
                 type="date"
                 id="date_end"
-                disabled={!isEnabled}
                 value={dateEnd}
                 min={dateStart}
                 onChange={(e) => setDateEnd(e.target.value)}
             />
-        </>
-    );
-
-    return (
-        <Criteria
-            criteriaRegistry={criteriaRegistry}
-            get={get}
-            label="특정 기간 내 게시물만 내보내기"
-            option={Option}
-        />
+        </Criteria>
     );
 };

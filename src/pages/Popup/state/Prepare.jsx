@@ -1,17 +1,17 @@
 import React from 'react';
-import { DateConstraints } from './Criteria';
+import { DateConstraints } from '../Criteria';
+import { State } from '.';
 
-export const Prepare = () => {
-    /** @type {import('./Popup').CriteriaRegistry[]} */
+export const Prepare = ({ transition }) => {
+    /** @type {import('../Popup').CriteriaRegistry[]} */
     const registry = [];
 
     const onStart = () => {
         let criteria = registry.reduce(
-            (curr, reg) =>
-                console.log(reg.isEnabled()) ||
-                (reg.isEnabled() ? Object.assign(curr, reg.get()) : curr),
+            (curr, reg) => Object.assign(curr, reg.get()),
             {}
         );
+        transition(State.Processing, { criteria });
     };
 
     return (

@@ -2,15 +2,11 @@ import React, { useEffect, useState } from 'react';
 import logo from '../../assets/img/logo.svg';
 import './Popup.scss';
 import { Destination, getBrowserMessenger } from '../../modules/messenger';
-import { Prepare } from './Prepare';
-import { createEnum } from '../../modules/util';
-
-const State = createEnum('Non_Band', 'Prepare', 'Processing', 'Completed');
+import { ViewByState } from './state';
 
 /**
  * @typedef CriteriaRegistry
  * @type {object}
- * @property {() => boolean} isEnabled
  * @property {() => object} get
  */
 
@@ -21,8 +17,6 @@ const Popup = () => {
     );
 
     const [message, setMessage] = useState('');
-
-    const [state, setState] = useState(State.Prepare);
 
     useEffect(() => {
         // messenger.send(Destination.Inject, 'getPosts', (msg) => {
@@ -38,14 +32,7 @@ const Popup = () => {
                 <h1>Band PDF Export</h1>
             </header>
             <main>
-                {(() => {
-                    switch (state) {
-                        case State.Prepare:
-                            return <Prepare />;
-                        default:
-                            return <></>;
-                    }
-                })()}
+                <ViewByState />
             </main>
         </>
     );
