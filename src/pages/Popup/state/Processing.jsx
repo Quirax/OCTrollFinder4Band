@@ -24,29 +24,34 @@ export const Processing = ({ transition, criteria }) => {
      */
     const [progress, setProgress] = useState(undefined);
 
-    useMessenger((messenger) => {
-        let interval;
+    useMessenger(
+        (messenger) => {
+            let timeout, interval;
 
-        setTimeout(() => {
-            const max = 100;
-            let progress = 0;
+            if (!max) {
+                timeout = setTimeout(() => {
+                    setMax(100);
+                    setProgress(0);
+                }, 2000);
+            } else {
+                let progress = 0;
 
-            setMax(max);
-            setProgress(progress);
+                interval = setInterval(() => {
+                    if (progress === max) {
+                        clearInterval(interval);
+                        return transition(State.Completed);
+                    }
+                    setProgress((progress += 10));
+                }, 500);
+            }
 
-            interval = setInterval(() => {
-                if (progress === max) {
-                    clearInterval(interval);
-                    return transition(State.Completed);
-                }
-                setProgress((progress += 10));
-            }, 500);
-        }, 2000);
-
-        return () => {
-            clearInterval(interval);
-        };
-    }, []);
+            return () => {
+                clearTimeout(timeout);
+                clearInterval(interval);
+            };
+        },
+        [max]
+    );
 
     return (
         <>

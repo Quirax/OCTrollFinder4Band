@@ -1,5 +1,6 @@
 import React from 'react';
 import { styled } from 'styled-components';
+import { State } from '.';
 import { BottomButton } from '../common';
 
 const H2 = styled.h2`
@@ -70,7 +71,9 @@ export const Completed = ({ transition }) => {
                 <Extension>.pdf</Extension>
             </ExportInfo>
             <DownloadButton>다운로드</DownloadButton>
-            <CreateNewButton>새로 만들기</CreateNewButton>
+            <CreateNewButton onClick={() => transition(State.Prepare)}>
+                새로 만들기
+            </CreateNewButton>
         </>
     );
 };
