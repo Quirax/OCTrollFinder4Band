@@ -1,6 +1,31 @@
 import React from 'react';
 import { DateConstraints } from '../Criteria';
 import { State } from '.';
+import { styled } from 'styled-components';
+
+const BandInfo = styled.div`
+    display: flex;
+    border: 1px solid black;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    & > img {
+        width: 100px;
+        margin-right: 0.5rem;
+    }
+
+    & > h2 {
+        font-size: 1rem;
+        overflow: hidden;
+        white-space: nowrap;
+        word-break: break-all;
+        text-overflow: ellipsis;
+        text-align: left;
+        margin: 0;
+    }
+`;
 
 export const Prepare = ({ transition }) => {
     /** @type {import('../Popup').CriteriaRegistry[]} */
@@ -16,11 +41,11 @@ export const Prepare = ({ transition }) => {
 
     return (
         <>
-            <div>
+            <BandInfo>
                 {/* TODO: get data from Inject */}
                 <img src="https://coresos-phinf.pstatic.net/a/34j97h/6_he1Ud018svctfwtlkzqahzf_rvsjem.jpg?type=cover_a264" />
                 <h2>우리의 세계는 0과 1로 이뤄졌다 ::Betatest on</h2>
-            </div>
+            </BandInfo>
             <details>
                 <summary>세부 조건</summary>
                 <DateConstraints criteriaRegistry={registry} />
