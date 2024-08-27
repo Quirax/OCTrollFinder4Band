@@ -12,7 +12,7 @@ const BandInfo = styled.div`
     margin-bottom: 1rem;
 
     & > img {
-        width: 100px;
+        height: 4rem;
         margin-right: 0.5rem;
     }
 
