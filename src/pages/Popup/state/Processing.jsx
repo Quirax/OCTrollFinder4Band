@@ -37,7 +37,7 @@ export const Processing = ({ transition, criteria }) => {
             interval = setInterval(() => {
                 if (progress === max) {
                     clearInterval(interval);
-                    return transition(State.Prepare); // TODO: transition to State.Completed
+                    return transition(State.Completed);
                 }
                 setProgress((progress += 10));
             }, 500);

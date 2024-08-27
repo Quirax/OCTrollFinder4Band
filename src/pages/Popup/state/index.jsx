@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Prepare } from './Prepare';
 import { createEnum } from '../../../modules/util';
 import { Processing } from './Processing';
+import { Completed } from './Completed';
 
 export const State = createEnum(
     'Non_Band',
@@ -24,6 +25,8 @@ export const ViewByState = ({ defaultState }) => {
             return <Prepare {...args} />;
         case State.Processing:
             return <Processing {...args} />;
+        case State.Completed:
+            return <Completed {...args} />;
         default:
             return <></>;
     }
