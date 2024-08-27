@@ -2,6 +2,7 @@ import React from 'react';
 import { DateConstraints } from '../Criteria';
 import { State } from '.';
 import { styled } from 'styled-components';
+import { BottomButton } from '../common';
 
 const BandInfo = styled.div`
     display: flex;
@@ -50,7 +51,9 @@ export const Prepare = ({ transition }) => {
                 <summary>세부 조건</summary>
                 <DateConstraints criteriaRegistry={registry} />
             </details>
-            <button onClick={onStart}>현재 밴드를 PDF로 내보내기</button>
+            <BottomButton onClick={onStart}>
+                현재 밴드를 PDF로 내보내기
+            </BottomButton>
         </>
     );
 };

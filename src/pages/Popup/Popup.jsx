@@ -24,7 +24,7 @@ const Popup = () => {
         //         setDefaultState(State.Prepare);
         //     else setDefaultState(State.Processing); // TODO: set to State.Non_Band
         // });
-        setDefaultState(State.Prepare);
+        setDefaultState(State.Processing);
     }, []);
 
     return (
