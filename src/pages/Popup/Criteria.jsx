@@ -1,5 +1,28 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { styled } from 'styled-components';
 import { classNames, makeId } from '../../modules/util';
+
+const CriteriaElement = styled.div`
+    background-color: #ccc;
+    padding: 0.5em;
+    margin: 0;
+    text-align: left;
+`;
+
+const CriteriaLabel = styled.div``;
+
+const CriteriaOption = styled.div`
+    margin-left: 20px;
+
+    &,
+    & * {
+        font-size: 0.9em;
+    }
+
+    &.disabled {
+        color: #666;
+    }
+`;
 
 /**
  * @param {{
@@ -26,8 +49,8 @@ const Criteria = ({ label, children, criteriaRegistry, value }) => {
     }, [isEnabled, value]);
 
     return (
-        <div className="criteria">
-            <div className="criteria_label">
+        <CriteriaElement>
+            <CriteriaLabel>
                 <input
                     type="checkbox"
                     id={checkboxId}
@@ -36,9 +59,9 @@ const Criteria = ({ label, children, criteriaRegistry, value }) => {
                     readOnly
                 />
                 <label htmlFor={checkboxId}>{label}</label>
-            </div>
-            {isEnabled && <div className="criteria_option">{children}</div>}
-        </div>
+            </CriteriaLabel>
+            {isEnabled && <CriteriaOption>{children}</CriteriaOption>}
+        </CriteriaElement>
     );
 };
 

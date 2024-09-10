@@ -28,6 +28,34 @@ const BandInfo = styled.div`
     }
 `;
 
+const CriteriaContainer = styled.details`
+    margin-bottom: 1em;
+
+    summary {
+        &::marker {
+            display: none;
+            content: '';
+        }
+
+        &::before {
+            content: '▶';
+            margin-right: 0.25em;
+        }
+
+        &::after {
+            content: '◀';
+            margin-left: 0.25em;
+        }
+    }
+
+    &[open] summary {
+        &::before,
+        &::after {
+            content: '▼';
+        }
+    }
+`;
+
 export const Prepare = ({ transition }) => {
     /** @type {import('../Popup').CriteriaRegistry[]} */
     const registry = [];
@@ -47,10 +75,10 @@ export const Prepare = ({ transition }) => {
                 <img src="https://coresos-phinf.pstatic.net/a/34j97h/6_he1Ud018svctfwtlkzqahzf_rvsjem.jpg?type=cover_a264" />
                 <h2>우리의 세계는 0과 1로 이뤄졌다 ::Betatest on</h2>
             </BandInfo>
-            <details>
+            <CriteriaContainer>
                 <summary>세부 조건</summary>
                 <DateConstraints criteriaRegistry={registry} />
-            </details>
+            </CriteriaContainer>
             <BottomButton onClick={onStart}>
                 현재 밴드를 PDF로 내보내기
             </BottomButton>

@@ -1,8 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { styled } from 'styled-components';
 import logo from '../../assets/img/logo.svg';
-import './Popup.scss';
 import { State, ViewByState } from './state';
 import { useBrowser, useMessenger } from './util';
+
+// ref: https://velog.io/@ayaan92/styled-components-.attrs%EC%97%90-%EB%8C%80%ED%95%98%EC%97%AC
+const LogoImg = styled.img.attrs(() => ({ src: logo }))`
+    border: 5px solid green;
+    height: 100px;
+    width: 100px;
+    border-radius: 100px;
+`;
+
+const Title = styled.h1.attrs(() => ({ children: 'Band PDF Export' }))``;
 
 /**
  * @typedef CriteriaRegistry
@@ -30,8 +40,8 @@ const Popup = () => {
     return (
         <>
             <header>
-                <img src={logo} />
-                <h1>Band PDF Export</h1>
+                <LogoImg />
+                <Title />
             </header>
             <main>
                 {defaultState && <ViewByState defaultState={defaultState} />}
