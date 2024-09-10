@@ -34,6 +34,7 @@ const ExportInfo = styled.div`
     }
 `;
 
+// ref: https://stackoverflow.com/a/65882955
 const FileName = styled.span`
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -70,7 +71,11 @@ export const Completed = ({ transition }) => {
                 </FileName>
                 <Extension>.pdf</Extension>
             </ExportInfo>
-            <DownloadButton>다운로드</DownloadButton>
+            <DownloadButton
+                onClick={() => alert('TODO: implement download routine')}
+            >
+                다운로드
+            </DownloadButton>
             <CreateNewButton onClick={() => transition(State.Prepare)}>
                 새로 만들기
             </CreateNewButton>
