@@ -3,6 +3,7 @@ import { Prepare } from './Prepare';
 import { createEnum } from '../../../modules/util';
 import { Processing } from './Processing';
 import { Completed } from './Completed';
+import { Non_Band } from './Non_Band';
 
 export const State = createEnum(
     'Non_Band',
@@ -27,6 +28,8 @@ export const ViewByState = ({ defaultState }) => {
             return <Processing {...args} />;
         case State.Completed:
             return <Completed {...args} />;
+        case State.Non_Band:
+            return <Non_Band {...args} />;
         default:
             return <></>;
     }
