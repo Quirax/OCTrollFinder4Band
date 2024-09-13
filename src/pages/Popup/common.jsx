@@ -1,6 +1,20 @@
-import { styled } from 'styled-components';
+import React from 'react';
+import { createGlobalStyle, styled } from 'styled-components';
 
-export const BottomButton = styled.button`
+const BottomButtonGlobal = createGlobalStyle`
+    body {
+        padding-bottom: 4em;
+    }
+`;
+
+export const BottomButton = styled.button.attrs((props) => ({
+    children: (
+        <>
+            <BottomButtonGlobal />
+            {props.children}
+        </>
+    ),
+}))`
     background-color: green;
     color: white;
     padding: 1em;

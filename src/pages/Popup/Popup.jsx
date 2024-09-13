@@ -32,7 +32,7 @@ const Popup = () => {
         //     console.log(tab.url);
         //     if (tab.url.match(/band.us\/band\//))
         //         setDefaultState(State.Prepare);
-        //     else setDefaultState(State.Processing); // TODO: set to State.Non_Band
+        //     else setDefaultState(State.Non_Band);
         // });
         setDefaultState(State.Non_Band);
     }, []);
