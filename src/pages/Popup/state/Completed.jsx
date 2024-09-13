@@ -59,16 +59,14 @@ const CreateNewButton = styled(BottomButton)`
     background-color: #aaa;
 `;
 
-export const Completed = ({ transition }) => {
+export const Completed = ({ transition, bandInfo }) => {
     return (
         <>
             <H2>작업을 완료하였습니다</H2>
             <ExportInfo>
                 {/* TODO: get data from Inject */}
-                <img src="https://coresos-phinf.pstatic.net/a/34j97h/6_he1Ud018svctfwtlkzqahzf_rvsjem.jpg?type=cover_a264" />
-                <FileName>
-                    우리의 세계는 0과 1로 이뤄졌다 ::Betatest on (2024-08-27)
-                </FileName>
+                <img src={bandInfo.cover} />
+                <FileName>{bandInfo.name} (2024-08-27)</FileName>
                 <Extension>.pdf</Extension>
             </ExportInfo>
             <DownloadButton

@@ -47,6 +47,10 @@ const main = {
             limit: limit || 20,
             after: after,
         }),
+    getBandInformation: () =>
+        get('https://api.band.us/v2.1.2/get_band_information', {
+            band_no: bandNo(),
+        }),
     messenger: getWindowMessenger(Destination.Inject, Destination.Content),
 };
 
