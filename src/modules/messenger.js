@@ -1,3 +1,5 @@
+import { makeId } from './util';
+
 // ref: https://velog.io/@broccolism/크롬-익스텐션-컴포넌트끼리-통신하는-방법
 // ref: https://velog.io/@goban/구글-확장프로그램-개발-2-스크립트간-통신
 
@@ -7,22 +9,6 @@ export const Destination = Object.freeze({
     Background: 'background',
     Popup: 'popup',
 });
-
-// ref: https://stackoverflow.com/a/1349426
-export function makeId(length) {
-    let result = '';
-    const characters =
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-        result += characters.charAt(
-            Math.floor(Math.random() * charactersLength)
-        );
-        counter += 1;
-    }
-    return result;
-}
 
 export const generateMessenger = (me, addListener, sendMessage) => {
     const callbacks = [];

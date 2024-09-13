@@ -1,41 +1,51 @@
 import React, { useEffect, useState } from 'react';
+import { styled } from 'styled-components';
 import logo from '../../assets/img/logo.svg';
-import './Popup.css';
-import { Destination, getBrowserMessenger } from '../../modules/messenger';
+import { State, ViewByState } from './state';
+import { useBrowser, useMessenger } from './util';
+
+// ref: https://velog.io/@ayaan92/styled-components-.attrs%EC%97%90-%EB%8C%80%ED%95%98%EC%97%AC
+const LogoImg = styled.img.attrs(() => ({ src: logo }))`
+    border: 5px solid green;
+    height: 100px;
+    width: 100px;
+    border-radius: 100px;
+`;
+
+const Title = styled.h1.attrs(() => ({ children: 'Band PDF Export' }))``;
+
+/**
+ * @typedef CriteriaRegistry
+ * @type {object}
+ * @property {() => object} get
+ */
 
 const Popup = () => {
-    const [message, setMessage] = useState('');
+    /**
+     * @type {[string | undefined, React.Dispatch<React.SetStateAction<string | undefined>>]}
+     */
+    const [defaultState, setDefaultState] = useState(undefined);
 
-    useEffect(() => {
-        const messenger = getBrowserMessenger(
-            Destination.Popup,
-            Destination.Content
-        );
-
-        messenger.send(Destination.Inject, 'getPosts', (msg) => {
-            console.log(msg);
-            setMessage(JSON.stringify(msg));
+    useBrowser((browser) => {
+        browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const tab = tabs[0];
+            console.log(tab.url);
+            if (tab.url.match(/band.us\/band\//))
+                setDefaultState(State.Prepare);
+            else setDefaultState(State.Non_Band);
         });
     }, []);
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>
-                    Edit <code>src/pages/Popup/Popup.jsx</code> and save to
-                    reload.
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    {message}
-                </a>
+        <>
+            <header>
+                <LogoImg />
+                <Title />
             </header>
-        </div>
+            <main>
+                {defaultState && <ViewByState defaultState={defaultState} />}
+            </main>
+        </>
     );
 };
 
