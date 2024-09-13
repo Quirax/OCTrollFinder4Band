@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DateConstraints } from '../Criteria';
 import { State } from '.';
 import { styled } from 'styled-components';
 import { BottomButton } from '../common';
+import { useMessenger } from '../util';
 
 const BandInfo = styled.div`
     display: flex;
@@ -59,6 +60,23 @@ const CriteriaContainer = styled.details`
 export const Prepare = ({ transition }) => {
     /** @type {import('../Popup').CriteriaRegistry[]} */
     const registry = [];
+    const [bandInfo, setBandInfo] = useState({});
+
+    useMessenger((messenger) => {
+        messenger.send(
+            messenger.Destination.Inject,
+            'getBandInformation',
+            (response) => {
+                if (response.result_code !== 1) {
+                    // TODO: 오류 처리
+                    console.error(response);
+                    return;
+                }
+
+                setBandInfo(response.result_data.band);
+            }
+        );
+    }, []);
 
     const onStart = () => {
         let criteria = registry.reduce(
@@ -67,6 +85,8 @@ export const Prepare = ({ transition }) => {
         );
         transition(State.Processing, { criteria });
     };
+
+    if (Object.entries(bandInfo).length === 0) return <></>;
 
     return (
         <>

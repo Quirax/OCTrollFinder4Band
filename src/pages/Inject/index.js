@@ -13,6 +13,9 @@ const onEnterBandPage = async () => {
             case 'getPosts':
                 const posts = await main.getPosts();
                 sendResponse(posts);
+            case 'getBandInformation':
+                const bandInfo = await main.getBandInformation();
+                sendResponse(bandInfo);
             default:
                 sendResponse('UNKNOWN requests');
         }

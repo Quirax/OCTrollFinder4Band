@@ -2,6 +2,8 @@ import React from 'react';
 import { useEffect } from 'react';
 import { Destination, getBrowserMessenger } from '../../modules/messenger';
 
+const messenger = getBrowserMessenger(Destination.Popup, Destination.Content);
+
 /**
  * @param {(messenger: {
  *     send: (to: any, message: any, callback: any) => void;
@@ -17,11 +19,7 @@ import { Destination, getBrowserMessenger } from '../../modules/messenger';
  * @param {React.DependencyList | undefined} deps
  */
 export const useMessenger = (effect, deps) =>
-    useEffect(
-        () =>
-            effect(getBrowserMessenger(Destination.Popup, Destination.Content)),
-        deps
-    );
+    useEffect(() => effect(messenger), deps);
 
 /**
  * @param {(browser: typeof chrome) => (void | () => void)} effect
