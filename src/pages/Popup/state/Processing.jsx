@@ -13,7 +13,7 @@ const ProgressBar = styled.progress`
     width: 100%;
 `;
 
-export const Processing = ({ transition, criteria }) => {
+export const Processing = ({ transition, criteria, bandInfo }) => {
     /**
      * @type {[number | undefined, React.Dispatch<React.SetStateAction<number | undefined>>]}
      */
@@ -39,7 +39,7 @@ export const Processing = ({ transition, criteria }) => {
                 interval = setInterval(() => {
                     if (progress === max) {
                         clearInterval(interval);
-                        return transition(State.Completed);
+                        return transition(State.Completed, { bandInfo });
                     }
                     setProgress((progress += 10));
                 }, 500);

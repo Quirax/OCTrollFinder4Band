@@ -77,9 +77,13 @@ const formatDate = (date) =>
  * }}
  */
 
-export const DateConstraints = ({ criteriaRegistry }) => {
-    const [dateStart, setDateStart] = useState(formatDate(new Date()));
-    const [dateEnd, setDateEnd] = useState(formatDate(new Date()));
+export const DateConstraints = ({
+    criteriaRegistry,
+    defaultStart = new Date(),
+    defaultEnd = new Date(),
+} = {}) => {
+    const [dateStart, setDateStart] = useState(formatDate(defaultStart));
+    const [dateEnd, setDateEnd] = useState(formatDate(defaultEnd));
 
     return (
         <Criteria
