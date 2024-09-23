@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import { State } from '.';
 import { BottomButton } from '../common';
+import { filterPosts } from '../Criteria';
 import { useMessenger } from '../util';
 
 const CancelButton = styled(BottomButton)`
@@ -41,8 +42,9 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
                             return;
                         }
 
-                        console.log(bandInfo, response);
-                        posts.push(response.result_data.items);
+                        posts.push(
+                            filterPosts(response.result_data.items, criteria)
+                        );
 
                         setMax(response.result_data.items[0].post_no);
                         setRemain(
@@ -62,9 +64,9 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
                             console.error(response);
                             return;
                         }
-
-                        console.log(bandInfo, response);
-                        posts.push(response.result_data.items);
+                        posts.push(
+                            filterPosts(response.result_data.items, criteria)
+                        );
 
                         let after =
                             response.result_data.paging.next_params?.after;
@@ -78,11 +80,6 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
                     }
                 );
             }
-
-            return () => {
-                // clearTimeout(timeout);
-                // clearInterval(interval);
-            };
         },
         [max, remain]
     );

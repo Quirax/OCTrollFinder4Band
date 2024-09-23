@@ -88,10 +88,7 @@ export const Prepare = ({ transition }) => {
     }, []);
 
     const onStart = () => {
-        let criteria = registry.reduce(
-            (curr, reg) => Object.assign(curr, reg.get()),
-            {}
-        );
+        let criteria = registry.map((v) => v.get()).filter((v) => v);
         transition(State.Processing, { criteria, bandInfo });
     };
 
