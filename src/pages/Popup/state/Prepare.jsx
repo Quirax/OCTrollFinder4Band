@@ -74,7 +74,7 @@ export const Prepare = ({ transition }) => {
     useMessenger((messenger) => {
         messenger.send(
             messenger.Destination.Inject,
-            'getBandInformation',
+            { api: 'getBandInformation' },
             (response) => {
                 if (response.result_code !== 1) {
                     // TODO: 오류 처리
