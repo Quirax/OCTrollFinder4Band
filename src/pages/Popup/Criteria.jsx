@@ -24,6 +24,12 @@ const CriteriaOption = styled.div`
     }
 `;
 
+export const filterPosts = (posts, criteria) => {
+    let list = posts;
+    criteria.forEach((c) => (list = list.filter(c)));
+    return list;
+};
+
 /**
  * @param {{
  *   label: string,
@@ -36,7 +42,7 @@ const Criteria = ({ label, children, criteriaRegistry, value }) => {
     const checkboxId = 'criteria_' + makeId(10);
     const [isEnabled, setIsEnabled] = useState(false);
 
-    const registry = { get: () => (isEnabled ? value : {}) };
+    const registry = { get: () => isEnabled && value };
 
     useEffect(() => {
         criteriaRegistry.push(registry);
@@ -88,11 +94,9 @@ export const DateConstraints = ({
     return (
         <Criteria
             criteriaRegistry={criteriaRegistry}
-            value={{
-                dateConstraints: {
-                    start: dateStart,
-                    end: dateEnd,
-                },
+            value={(post) => {
+                let date = new Date(post.created_at);
+                return new Date(dateStart) <= date && date <= new Date(dateEnd);
             }}
             label="특정 기간 내 게시물만 내보내기"
         >

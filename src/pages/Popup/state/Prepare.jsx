@@ -74,7 +74,7 @@ export const Prepare = ({ transition }) => {
     useMessenger((messenger) => {
         messenger.send(
             messenger.Destination.Inject,
-            'getBandInformation',
+            { api: 'getBandInformation' },
             (response) => {
                 if (response.result_code !== 1) {
                     // TODO: 오류 처리
@@ -88,10 +88,7 @@ export const Prepare = ({ transition }) => {
     }, []);
 
     const onStart = () => {
-        let criteria = registry.reduce(
-            (curr, reg) => Object.assign(curr, reg.get()),
-            {}
-        );
+        let criteria = registry.map((v) => v.get()).filter((v) => v);
         transition(State.Processing, { criteria, bandInfo });
     };
 

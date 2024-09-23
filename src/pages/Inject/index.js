@@ -9,9 +9,12 @@ const onEnterBandPage = async () => {
     const main = await getMain();
 
     main.messenger.addListener(async (message, sendResponse) => {
-        switch (message) {
+        let api = typeof message === 'object' ? message.api : message;
+
+        switch (api) {
             case 'getPosts':
-                const posts = await main.getPosts();
+                const { after, limit } = message;
+                const posts = await main.getPosts(after, limit);
                 sendResponse(posts);
             case 'getBandInformation':
                 const bandInfo = await main.getBandInformation();
