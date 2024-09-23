@@ -74,8 +74,7 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
                         if (after) setRemain(Number(after));
                         else {
                             posts = posts.flat();
-                            console.log(posts);
-                            transition(State.Completed, { bandInfo });
+                            transition(State.Completed, { bandInfo, posts });
                         }
                     }
                 );

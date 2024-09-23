@@ -59,7 +59,12 @@ const CreateNewButton = styled(BottomButton)`
     background-color: #aaa;
 `;
 
-export const Completed = ({ transition, bandInfo }) => {
+export const Completed = ({ transition, bandInfo, posts }) => {
+    const onDownload = () => {
+        console.log(posts);
+        alert('TODO: implement download routine');
+    };
+
     return (
         <>
             <H2>작업을 완료하였습니다</H2>
@@ -69,11 +74,7 @@ export const Completed = ({ transition, bandInfo }) => {
                 <FileName>{bandInfo.name} (2024-08-27)</FileName>
                 <Extension>.pdf</Extension>
             </ExportInfo>
-            <DownloadButton
-                onClick={() => alert('TODO: implement download routine')}
-            >
-                다운로드
-            </DownloadButton>
+            <DownloadButton onClick={onDownload}>다운로드</DownloadButton>
             <CreateNewButton onClick={() => transition(State.Prepare)}>
                 새로 만들기
             </CreateNewButton>
