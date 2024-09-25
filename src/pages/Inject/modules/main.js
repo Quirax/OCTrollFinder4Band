@@ -45,12 +45,16 @@ const main = {
             limit: limit || 20,
             after: after,
         }),
-    getComments: (postNo, previousParams) =>
+    getComments: (postNo, previousParams, commentId) =>
         get('https://api.band.us/v2.3.0/get_comments', {
             ...previousParams,
             band_no: bandNo(),
             resolution_type: 4,
-            content_key: JSON.stringify({ content_type: 'post', post_no: postNo }),
+            content_key: JSON.stringify(
+                commentId
+                    ? { content_type: 'post_comment', post_no: postNo, comment_id: commentId }
+                    : { content_type: 'post', post_no: postNo }
+            ),
         }),
     getBandInformation: () =>
         get('https://api.band.us/v2.1.2/get_band_information', {

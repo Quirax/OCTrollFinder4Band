@@ -28,21 +28,55 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
     const [remain, setRemain] = useState(undefined);
 
     const processComments = useCallback(
-        (messenger, post, previousParams) =>
+        (messenger, post, previousParams, commentId) =>
             new Promise((resolve, reject) => {
                 messenger.send(
                     messenger.Destination.Inject,
-                    { api: 'getComments', postNo: post.post_no, previousParams },
+                    { api: 'getComments', postNo: post.post_no, previousParams, commentId },
                     (response) => {
                         if (response.result_code !== 1) {
                             // TODO: 오류 처리
                             console.error(response);
                             return reject();
                         }
-                        resolve({
-                            items: response.result_data.items,
-                            previousParams: response.result_data.paging.previous_params,
-                        });
+
+                        (async () => {
+                            let items = response.result_data.items;
+
+                            if (!commentId) {
+                                items = await Promise.all(
+                                    items.map(async (comment) => {
+                                        if (comment.comment_count === 0) return comment;
+                                        if (comment.comment_count === comment.latest_comment.length)
+                                            return { ...comment, comments: comment.latest_comment };
+
+                                        let comments = [];
+
+                                        for (let pp; ; ) {
+                                            let result = await processComments(
+                                                messenger,
+                                                post,
+                                                pp,
+                                                comment.comment_id
+                                            ).catch((e) => reject(e));
+                                            comments.push(result.items);
+                                            if (!(pp = result.previousParams)) break;
+                                        }
+
+                                        return { ...comment, comments: comments.flat() };
+                                    })
+                                );
+                            }
+
+                            resolve({
+                                items: items,
+                                previousParams: response.result_data.paging.previous_params,
+                            });
+                        })();
+
+                        // comment_count === 0 -> noop
+                        // comment_count === latest_comment.length -> comments = latest_comment
+                        // else -> API loop
                     }
                 );
             }),
@@ -60,7 +94,7 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
 
                         (async () => {
                             for (let pp; ; ) {
-                                let result = await processComments(messenger, post, pp);
+                                let result = await processComments(messenger, post, pp).catch((e) => reject(e));
                                 comments.push(result.items);
                                 if (!(pp = result.previousParams)) break;
                             }
