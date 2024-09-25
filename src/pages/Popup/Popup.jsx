@@ -30,8 +30,7 @@ const Popup = () => {
         browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             const tab = tabs[0];
             console.log(tab.url);
-            if (tab.url.match(/band.us\/band\//))
-                setDefaultState(State.Prepare);
+            if (tab.url.match(/band.us\/band\//)) setDefaultState(State.Prepare);
             else setDefaultState(State.Non_Band);
         });
     }, []);
@@ -42,9 +41,7 @@ const Popup = () => {
                 <LogoImg />
                 <Title />
             </header>
-            <main>
-                {defaultState && <ViewByState defaultState={defaultState} />}
-            </main>
+            <main>{defaultState && <ViewByState defaultState={defaultState} />}</main>
         </>
     );
 };

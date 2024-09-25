@@ -75,9 +75,7 @@ export const Completed = ({ transition, bandInfo, posts }) => {
                 <Extension>.pdf</Extension>
             </ExportInfo>
             <DownloadButton onClick={onDownload}>다운로드</DownloadButton>
-            <CreateNewButton onClick={() => transition(State.Prepare)}>
-                새로 만들기
-            </CreateNewButton>
+            <CreateNewButton onClick={() => transition(State.Prepare)}>새로 만들기</CreateNewButton>
         </>
     );
 };

@@ -16,18 +16,7 @@ var alias = {};
 // load the secrets
 var secretsPath = path.join(__dirname, 'secrets.' + env.NODE_ENV + '.js');
 
-var fileExtensions = [
-    'jpg',
-    'jpeg',
-    'png',
-    'gif',
-    'eot',
-    'otf',
-    'svg',
-    'ttf',
-    'woff',
-    'woff2',
-];
+var fileExtensions = ['jpg', 'jpeg', 'png', 'gif', 'eot', 'otf', 'svg', 'ttf', 'woff', 'woff2'];
 
 if (fileSystem.existsSync(secretsPath)) {
     alias['secrets'] = secretsPath;
@@ -40,38 +29,15 @@ var options = {
     entry: {
         options: path.join(__dirname, 'src', 'pages', 'Options', 'index.jsx'),
         popup: path.join(__dirname, 'src', 'pages', 'Popup', 'index.jsx'),
-        background: path.join(
-            __dirname,
-            'src',
-            'pages',
-            'Background',
-            'index.js'
-        ),
-        contentScript: path.join(
-            __dirname,
-            'src',
-            'pages',
-            'Content',
-            'index.js'
-        ),
-        injectScript: path.join(
-            __dirname,
-            'src',
-            'pages',
-            'Inject',
-            'index.js'
-        ),
+        background: path.join(__dirname, 'src', 'pages', 'Background', 'index.js'),
+        contentScript: path.join(__dirname, 'src', 'pages', 'Content', 'index.js'),
+        injectScript: path.join(__dirname, 'src', 'pages', 'Inject', 'index.js'),
         devtools: path.join(__dirname, 'src', 'pages', 'Devtools', 'index.js'),
         panel: path.join(__dirname, 'src', 'pages', 'Panel', 'index.jsx'),
         print: path.join(__dirname, 'src', 'pages', 'Print', 'index.jsx'),
     },
     chromeExtensionBoilerplate: {
-        notHotReload: [
-            'background',
-            'contentScript',
-            'devtools',
-            'injectScript',
-        ],
+        notHotReload: ['background', 'contentScript', 'devtools', 'injectScript'],
     },
     output: {
         filename: '[name].bundle.js',
@@ -122,9 +88,7 @@ var options = {
                         loader: require.resolve('ts-loader'),
                         options: {
                             getCustomTransformers: () => ({
-                                before: [
-                                    isDevelopment && ReactRefreshTypeScript(),
-                                ].filter(Boolean),
+                                before: [isDevelopment && ReactRefreshTypeScript()].filter(Boolean),
                             }),
                             transpileOnly: isDevelopment,
                         },
@@ -140,10 +104,7 @@ var options = {
                     {
                         loader: require.resolve('babel-loader'),
                         options: {
-                            plugins: [
-                                isDevelopment &&
-                                    require.resolve('react-refresh/babel'),
-                            ].filter(Boolean),
+                            plugins: [isDevelopment && require.resolve('react-refresh/babel')].filter(Boolean),
                         },
                     },
                 ],
@@ -153,9 +114,7 @@ var options = {
     },
     resolve: {
         alias: alias,
-        extensions: fileExtensions
-            .map((extension) => '.' + extension)
-            .concat(['.js', '.jsx', '.ts', '.tsx', '.css']),
+        extensions: fileExtensions.map((extension) => '.' + extension).concat(['.js', '.jsx', '.ts', '.tsx', '.css']),
     },
     plugins: [
         isDevelopment && new ReactRefreshWebpackPlugin(),
@@ -173,8 +132,7 @@ var options = {
                         // generates the manifest file using the package.json informations
                         return Buffer.from(
                             JSON.stringify({
-                                description:
-                                    process.env.npm_package_description,
+                                description: process.env.npm_package_description,
                                 version: process.env.npm_package_version,
                                 ...JSON.parse(content.toString()),
                             })
@@ -211,61 +169,31 @@ var options = {
             ],
         }),
         new HtmlWebpackPlugin({
-            template: path.join(
-                __dirname,
-                'src',
-                'pages',
-                'Options',
-                'index.html'
-            ),
+            template: path.join(__dirname, 'src', 'pages', 'Options', 'index.html'),
             filename: 'options.html',
             chunks: ['options'],
             cache: false,
         }),
         new HtmlWebpackPlugin({
-            template: path.join(
-                __dirname,
-                'src',
-                'pages',
-                'Popup',
-                'index.html'
-            ),
+            template: path.join(__dirname, 'src', 'pages', 'Popup', 'index.html'),
             filename: 'popup.html',
             chunks: ['popup'],
             cache: false,
         }),
         new HtmlWebpackPlugin({
-            template: path.join(
-                __dirname,
-                'src',
-                'pages',
-                'Devtools',
-                'index.html'
-            ),
+            template: path.join(__dirname, 'src', 'pages', 'Devtools', 'index.html'),
             filename: 'devtools.html',
             chunks: ['devtools'],
             cache: false,
         }),
         new HtmlWebpackPlugin({
-            template: path.join(
-                __dirname,
-                'src',
-                'pages',
-                'Panel',
-                'index.html'
-            ),
+            template: path.join(__dirname, 'src', 'pages', 'Panel', 'index.html'),
             filename: 'panel.html',
             chunks: ['panel'],
             cache: false,
         }),
         new HtmlWebpackPlugin({
-            template: path.join(
-                __dirname,
-                'src',
-                'pages',
-                'Print',
-                'index.html'
-            ),
+            template: path.join(__dirname, 'src', 'pages', 'Print', 'index.html'),
             filename: 'print.html',
             chunks: ['print'],
             cache: false,

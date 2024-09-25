@@ -18,12 +18,10 @@ const messenger = getBrowserMessenger(Destination.Popup, Destination.Content);
  * }) => (void | () => void)} effect
  * @param {React.DependencyList | undefined} deps
  */
-export const useMessenger = (effect, deps) =>
-    useEffect(() => effect(messenger), deps);
+export const useMessenger = (effect, deps) => useEffect(() => effect(messenger), deps);
 
 /**
  * @param {(browser: typeof chrome) => (void | () => void)} effect
  * @param {React.DependencyList | undefined} deps
  */
-export const useBrowser = (effect, deps) =>
-    useEffect(() => effect(self.browser || self.chrome), deps);
+export const useBrowser = (effect, deps) => useEffect(() => effect(self.browser || self.chrome), deps);

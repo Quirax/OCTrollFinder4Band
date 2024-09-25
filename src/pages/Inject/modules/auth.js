@@ -5,26 +5,13 @@ import _ from 'underscore';
 const extendAuth = (auth) =>
     _.extend(auth, {
         isInAppWebViewSignedUserWithToken: function () {
-            return (
-                this.isWebViewUserAgent() &&
-                this.isSignedUser() &&
-                this.isInAppWebViewToken()
-            );
+            return this.isWebViewUserAgent() && this.isSignedUser() && this.isInAppWebViewToken();
         },
         createMd: function (str) {
             if (!this || !this.makeMd) return null;
-            window.$.browser.msie ||
-                window.$.browser.msedge ||
-                (str = str.replace(/'/gi, '%27'));
-            var str_refined = str
-                .replace(/^.*?:\/\//g, '')
-                .replace(/^[^/]+/g, '');
-            return (
-                this.makeMd(
-                    str_refined,
-                    this.isInAppWebViewSignedUserWithToken()
-                ) || {}
-            ).md;
+            window.$.browser.msie || window.$.browser.msedge || (str = str.replace(/'/gi, '%27'));
+            var str_refined = str.replace(/^.*?:\/\//g, '').replace(/^[^/]+/g, '');
+            return (this.makeMd(str_refined, this.isInAppWebViewSignedUserWithToken()) || {}).md;
         },
         akey: function () {
             return this.isInAppWebViewSignedUserWithToken()
