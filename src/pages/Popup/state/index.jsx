@@ -5,12 +5,7 @@ import { Processing } from './Processing';
 import { Completed } from './Completed';
 import { Non_Band } from './Non_Band';
 
-export const State = createEnum(
-    'Non_Band',
-    'Prepare',
-    'Processing',
-    'Completed'
-);
+export const State = createEnum('Non_Band', 'Prepare', 'Processing', 'Completed');
 
 export const ViewByState = ({ defaultState }) => {
     const [state, setState] = useState([defaultState || State.Prepare, {}]);

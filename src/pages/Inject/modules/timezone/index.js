@@ -21,11 +21,7 @@ const timezone = {
 
     _guessTimeZoneId: function () {
         let guess = moment.tz.guess(); // momentjs
-        return this._hasIntlTimeZone() ||
-            'KR' != this._countryCode ||
-            'Asia/Tokyo' != guess
-            ? guess
-            : 'Asia/Seoul';
+        return this._hasIntlTimeZone() || 'KR' != this._countryCode || 'Asia/Tokyo' != guess ? guess : 'Asia/Seoul';
     },
 
     getTimezone: function (e) {

@@ -8,9 +8,7 @@ import { Destination, getWindowMessenger } from '../../../modules/messenger';
 let isLoaded = false;
 
 async function get(url, query, options) {
-    Object.keys(query).forEach(
-        (key) => query[key] === undefined && delete query[key]
-    );
+    Object.keys(query).forEach((key) => query[key] === undefined && delete query[key]);
 
     let uri =
         url +
