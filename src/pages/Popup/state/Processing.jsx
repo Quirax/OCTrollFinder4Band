@@ -27,9 +27,35 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
      */
     const [remain, setRemain] = useState(undefined);
 
-    const processFragment = useCallback((fragment) => {
-        posts.push(fragment);
-        console.log(fragment);
+    const processFragment = useCallback(async (messenger, fragment) => {
+        let fragmentWithComment = await Promise.all(
+            fragment?.map(
+                (post) =>
+                    new Promise((resolve, reject) => {
+                        if (post.comment_count === 0) return resolve(post);
+
+                        messenger.send(
+                            messenger.Destination.Inject,
+                            { api: 'getComments', postNo: post.post_no },
+                            (response) => {
+                                if (response.result_code !== 1) {
+                                    // TODO: 오류 처리
+                                    console.error(response);
+                                    return reject();
+                                }
+
+                                let comments = response.result_data.items;
+
+                                resolve({ ...post, comments });
+                            }
+                        );
+                    })
+            )
+        );
+
+        console.log(fragmentWithComment);
+
+        posts.push(fragmentWithComment);
     }, []);
 
     useMessenger(
@@ -38,34 +64,38 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
                 posts = [];
 
                 messenger.send(messenger.Destination.Inject, { api: 'getPosts' }, (response) => {
-                    if (response.result_code !== 1) {
-                        // TODO: 오류 처리
-                        console.error(response);
-                        return;
-                    }
+                    (async () => {
+                        if (response.result_code !== 1) {
+                            // TODO: 오류 처리
+                            console.error(response);
+                            return;
+                        }
 
-                    processFragment(filterPosts(response.result_data.items, criteria));
+                        await processFragment(messenger, filterPosts(response.result_data.items, criteria));
 
-                    setMax(response.result_data.items[0].post_no);
-                    setRemain(Number(response.result_data.paging.next_params.after));
+                        setMax(response.result_data.items[0].post_no);
+                        setRemain(Number(response.result_data.paging.next_params.after));
+                    })();
                 });
             } else if (remain >= 0) {
                 messenger.send(messenger.Destination.Inject, { api: 'getPosts', after: remain }, (response) => {
-                    if (response.result_code !== 1) {
-                        // TODO: 오류 처리
-                        console.error(response);
-                        return;
-                    }
+                    (async () => {
+                        if (response.result_code !== 1) {
+                            // TODO: 오류 처리
+                            console.error(response);
+                            return;
+                        }
 
-                    processFragment(filterPosts(response.result_data.items, criteria));
+                        await processFragment(messenger, filterPosts(response.result_data.items, criteria));
 
-                    let after = response.result_data.paging.next_params?.after;
+                        let after = response.result_data.paging.next_params?.after;
 
-                    if (after) setRemain(Number(after));
-                    else {
-                        posts = posts.flat();
-                        transition(State.Completed, { bandInfo, posts });
-                    }
+                        if (after) setRemain(Number(after));
+                        else {
+                            posts = posts.flat();
+                            transition(State.Completed, { bandInfo, posts });
+                        }
+                    })();
                 });
             }
         },
