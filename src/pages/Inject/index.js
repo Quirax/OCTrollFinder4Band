@@ -18,8 +18,8 @@ const onEnterBandPage = async () => {
                 sendResponse(posts);
                 break;
             case 'getComments':
-                const { postNo } = message;
-                const comments = await main.getComments(postNo);
+                const { postNo, previousParams } = message;
+                const comments = await main.getComments(postNo, previousParams);
                 sendResponse(comments);
                 break;
             case 'getBandInformation':

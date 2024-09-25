@@ -45,8 +45,9 @@ const main = {
             limit: limit || 20,
             after: after,
         }),
-    getComments: (postNo) =>
+    getComments: (postNo, previousParams) =>
         get('https://api.band.us/v2.3.0/get_comments', {
+            ...previousParams,
             band_no: bandNo(),
             resolution_type: 4,
             content_key: JSON.stringify({ content_type: 'post', post_no: postNo }),

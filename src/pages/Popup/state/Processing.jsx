@@ -27,6 +27,28 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
      */
     const [remain, setRemain] = useState(undefined);
 
+    const processComments = useCallback(
+        (messenger, post, previousParams) =>
+            new Promise((resolve, reject) => {
+                messenger.send(
+                    messenger.Destination.Inject,
+                    { api: 'getComments', postNo: post.post_no, previousParams },
+                    (response) => {
+                        if (response.result_code !== 1) {
+                            // TODO: 오류 처리
+                            console.error(response);
+                            return reject();
+                        }
+                        resolve({
+                            items: response.result_data.items,
+                            previousParams: response.result_data.paging.previous_params,
+                        });
+                    }
+                );
+            }),
+        []
+    );
+
     const processFragment = useCallback(async (messenger, fragment) => {
         let fragmentWithComment = await Promise.all(
             fragment?.map(
@@ -34,21 +56,17 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
                     new Promise((resolve, reject) => {
                         if (post.comment_count === 0) return resolve(post);
 
-                        messenger.send(
-                            messenger.Destination.Inject,
-                            { api: 'getComments', postNo: post.post_no },
-                            (response) => {
-                                if (response.result_code !== 1) {
-                                    // TODO: 오류 처리
-                                    console.error(response);
-                                    return reject();
-                                }
+                        let comments = [];
 
-                                let comments = response.result_data.items;
-
-                                resolve({ ...post, comments });
+                        (async () => {
+                            for (let pp; ; ) {
+                                let result = await processComments(messenger, post, pp);
+                                comments.push(result.items);
+                                if (!(pp = result.previousParams)) break;
                             }
-                        );
+
+                            resolve({ ...post, comments: comments.flat() });
+                        })();
                     })
             )
         );
