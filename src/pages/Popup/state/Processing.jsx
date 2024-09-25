@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import { State } from '.';
 import { BottomButton } from '../common';
@@ -27,6 +27,11 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
      */
     const [remain, setRemain] = useState(undefined);
 
+    const processFragment = useCallback((fragment) => {
+        posts.push(fragment);
+        console.log(fragment);
+    }, []);
+
     useMessenger(
         (messenger) => {
             if (!max) {
@@ -39,8 +44,7 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
                         return;
                     }
 
-                    let fragment = filterPosts(response.result_data.items, criteria);
-                    posts.push(fragment);
+                    processFragment(filterPosts(response.result_data.items, criteria));
 
                     setMax(response.result_data.items[0].post_no);
                     setRemain(Number(response.result_data.paging.next_params.after));
@@ -53,8 +57,7 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
                         return;
                     }
 
-                    let fragment = filterPosts(response.result_data.items, criteria);
-                    posts.push(fragment);
+                    processFragment(filterPosts(response.result_data.items, criteria));
 
                     let after = response.result_data.paging.next_params?.after;
 
