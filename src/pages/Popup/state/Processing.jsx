@@ -124,7 +124,7 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
         <>
             <label>
                 PDF로 내보내는 중...
-                <ProgressBar value={max - remain} max={max} />
+                <ProgressBar value={Number.isInteger(max) && Number.isInteger(remain) && max - remain} max={max} />
                 {Number.isInteger(max) && Number.isInteger(remain) && `(${max - remain} / ${max})`}
             </label>
             <CancelButton onClick={() => transition(State.Prepare)}>취소</CancelButton>
