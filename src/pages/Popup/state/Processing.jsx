@@ -32,18 +32,15 @@ const processComments = (messenger, post, previousParams, commentId) =>
                     let items = response.result_data.items;
 
                     if (!commentId) {
-                        items = await Promise.all(
-                            items.map(async (comment) => {
-                                if (comment.comment_count === 0) return comment;
-                                if (comment.comment_count === comment.latest_comment.length)
-                                    return { ...comment, comments: comment.latest_comment };
-
-                                return {
-                                    ...comment,
-                                    comments: await processAllComments(messenger, comment, comment.comment_id),
-                                };
-                            })
-                        );
+                        items = await items.promiseAll(async (comment) => ({
+                            ...comment,
+                            comments:
+                                comment.comment_count === 0
+                                    ? []
+                                    : comment.comment_count === comment.latest_comment.length
+                                    ? comment.latest_comment
+                                    : await processAllComments(messenger, comment, comment.comment_id),
+                        }));
                     }
 
                     resolve({
@@ -79,21 +76,10 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
     const [remain, setRemain] = useState(undefined);
 
     const processFragment = useCallback(async (messenger, fragment) => {
-        let fragmentWithComment = await Promise.all(
-            fragment?.map(
-                (post) =>
-                    new Promise((resolve, reject) => {
-                        if (post.comment_count === 0) return resolve(post);
-
-                        (async () => {
-                            resolve({
-                                ...post,
-                                comments: await processAllComments(messenger, post),
-                            });
-                        })();
-                    })
-            )
-        );
+        let fragmentWithComment = await fragment?.promiseAll(async (post) => ({
+            ...post,
+            comments: post.comment_count === 0 ? [] : await processAllComments(messenger, post),
+        }));
         posts.push(fragmentWithComment);
     }, []);
 

@@ -25,3 +25,7 @@ export const useMessenger = (effect, deps) => useEffect(() => effect(messenger),
  * @param {React.DependencyList | undefined} deps
  */
 export const useBrowser = (effect, deps) => useEffect(() => effect(self.browser || self.chrome), deps);
+
+Array.prototype.promiseAll = function (callback) {
+    return Promise.all(this.map(callback));
+};
