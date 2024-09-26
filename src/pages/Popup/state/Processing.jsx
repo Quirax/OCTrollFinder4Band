@@ -16,6 +16,57 @@ const ProgressBar = styled.progress`
 
 let posts = [];
 
+const processComments = (messenger, post, previousParams, commentId) =>
+    new Promise((resolve, reject) => {
+        messenger.send(
+            messenger.Destination.Inject,
+            { api: 'getComments', postNo: post.post_no, previousParams, commentId },
+            (response) => {
+                if (response.result_code !== 1) {
+                    // TODO: 오류 처리
+                    console.error(response);
+                    return reject();
+                }
+
+                (async () => {
+                    let items = response.result_data.items;
+
+                    if (!commentId) {
+                        items = await Promise.all(
+                            items.map(async (comment) => {
+                                if (comment.comment_count === 0) return comment;
+                                if (comment.comment_count === comment.latest_comment.length)
+                                    return { ...comment, comments: comment.latest_comment };
+
+                                return {
+                                    ...comment,
+                                    comments: await processAllComments(messenger, comment, comment.comment_id),
+                                };
+                            })
+                        );
+                    }
+
+                    resolve({
+                        items: items,
+                        previousParams: response.result_data.paging.previous_params,
+                    });
+                })();
+            }
+        );
+    });
+
+const processAllComments = async (messenger, post, commentId) => {
+    let comments = [];
+
+    for (let pp; ; ) {
+        let result = await processComments(messenger, post, pp, commentId).catch((e) => reject(e));
+        comments.push(result.items);
+        if (!(pp = result.previousParams)) break;
+    }
+
+    return comments.flat();
+};
+
 export const Processing = ({ transition, criteria, bandInfo }) => {
     /**
      * @type {[number | undefined, React.Dispatch<React.SetStateAction<number | undefined>>]}
@@ -27,62 +78,6 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
      */
     const [remain, setRemain] = useState(undefined);
 
-    const processComments = useCallback(
-        (messenger, post, previousParams, commentId) =>
-            new Promise((resolve, reject) => {
-                messenger.send(
-                    messenger.Destination.Inject,
-                    { api: 'getComments', postNo: post.post_no, previousParams, commentId },
-                    (response) => {
-                        if (response.result_code !== 1) {
-                            // TODO: 오류 처리
-                            console.error(response);
-                            return reject();
-                        }
-
-                        (async () => {
-                            let items = response.result_data.items;
-
-                            if (!commentId) {
-                                items = await Promise.all(
-                                    items.map(async (comment) => {
-                                        if (comment.comment_count === 0) return comment;
-                                        if (comment.comment_count === comment.latest_comment.length)
-                                            return { ...comment, comments: comment.latest_comment };
-
-                                        let comments = [];
-
-                                        for (let pp; ; ) {
-                                            let result = await processComments(
-                                                messenger,
-                                                post,
-                                                pp,
-                                                comment.comment_id
-                                            ).catch((e) => reject(e));
-                                            comments.push(result.items);
-                                            if (!(pp = result.previousParams)) break;
-                                        }
-
-                                        return { ...comment, comments: comments.flat() };
-                                    })
-                                );
-                            }
-
-                            resolve({
-                                items: items,
-                                previousParams: response.result_data.paging.previous_params,
-                            });
-                        })();
-
-                        // comment_count === 0 -> noop
-                        // comment_count === latest_comment.length -> comments = latest_comment
-                        // else -> API loop
-                    }
-                );
-            }),
-        []
-    );
-
     const processFragment = useCallback(async (messenger, fragment) => {
         let fragmentWithComment = await Promise.all(
             fragment?.map(
@@ -90,23 +85,15 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
                     new Promise((resolve, reject) => {
                         if (post.comment_count === 0) return resolve(post);
 
-                        let comments = [];
-
                         (async () => {
-                            for (let pp; ; ) {
-                                let result = await processComments(messenger, post, pp).catch((e) => reject(e));
-                                comments.push(result.items);
-                                if (!(pp = result.previousParams)) break;
-                            }
-
-                            resolve({ ...post, comments: comments.flat() });
+                            resolve({
+                                ...post,
+                                comments: await processAllComments(messenger, post),
+                            });
                         })();
                     })
             )
         );
-
-        console.log(fragmentWithComment);
-
         posts.push(fragmentWithComment);
     }, []);
 
@@ -145,6 +132,7 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
                         if (after) setRemain(Number(after));
                         else {
                             posts = posts.flat();
+                            console.log(posts);
                             transition(State.Completed, { bandInfo, posts });
                         }
                     })();
