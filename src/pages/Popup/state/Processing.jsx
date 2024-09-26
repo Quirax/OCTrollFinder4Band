@@ -16,6 +16,8 @@ const ProgressBar = styled.progress`
 
 let posts = [];
 
+const sortComments = (comments) => comments.sort((a, b) => a.comment_id - b.comment_id);
+
 const processComments = (messenger, post, previousParams, commentId) =>
     new Promise((resolve, reject) => {
         messenger.send(
@@ -61,7 +63,7 @@ const processAllComments = async (messenger, post, commentId) => {
         if (!(pp = result.previousParams)) break;
     }
 
-    return comments.flat();
+    return sortComments(comments.flat());
 };
 
 const processFragment = async (messenger, fragment) => {
