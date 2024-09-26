@@ -16,9 +16,16 @@ const onEnterBandPage = async () => {
                 const { after, limit } = message;
                 const posts = await main.getPosts(after, limit);
                 sendResponse(posts);
+                break;
+            case 'getComments':
+                const { postNo, previousParams, commentId } = message;
+                const comments = await main.getComments(postNo, previousParams, commentId);
+                sendResponse(comments);
+                break;
             case 'getBandInformation':
                 const bandInfo = await main.getBandInformation();
                 sendResponse(bandInfo);
+                break;
             default:
                 sendResponse('UNKNOWN requests');
         }
