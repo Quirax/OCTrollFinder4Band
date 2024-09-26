@@ -60,7 +60,12 @@ const CreateNewButton = styled(BottomButton)`
 `;
 
 export const Completed = ({ transition, bandInfo, posts }) => {
+    // TODO: 파일명 생성
+
     const onDownload = () => {
+        // TODO: bandInfo 및 posts를 고유 ID와 함께 storage에 저장
+        // TODO: 확장의 print page를 표시 (이 때, ID를 함께 제공)
+        // ref: https://developer.chrome.com/docs/extensions/reference/api/storage
         console.log(posts);
         alert('TODO: implement download routine');
     };
