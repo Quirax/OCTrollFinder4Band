@@ -64,6 +64,34 @@ const processAllComments = async (messenger, post, commentId) => {
     return comments.flat();
 };
 
+const processFragment = async (messenger, fragment) => {
+    let fragmentWithComment = await fragment?.promiseAll(async (post) => ({
+        ...post,
+        comments: post.comment_count === 0 ? [] : await processAllComments(messenger, post),
+    }));
+    posts.push(fragmentWithComment);
+};
+
+const processPosts = (messenger, criteria, after) =>
+    new Promise((resolve) =>
+        messenger.send(messenger.Destination.Inject, { api: 'getPosts', after }, (response) => {
+            (async () => {
+                if (response.result_code !== 1) {
+                    // TODO: 오류 처리
+                    console.error(response);
+                    return;
+                }
+
+                await processFragment(messenger, filterPosts(response.result_data.items, criteria));
+
+                resolve({
+                    after: response.result_data.paging.next_params?.after,
+                    max: response.result_data.items[0].post_no,
+                });
+            })();
+        })
+    );
+
 export const Processing = ({ transition, criteria, bandInfo }) => {
     /**
      * @type {[number | undefined, React.Dispatch<React.SetStateAction<number | undefined>>]}
@@ -75,55 +103,25 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
      */
     const [remain, setRemain] = useState(undefined);
 
-    const processFragment = useCallback(async (messenger, fragment) => {
-        let fragmentWithComment = await fragment?.promiseAll(async (post) => ({
-            ...post,
-            comments: post.comment_count === 0 ? [] : await processAllComments(messenger, post),
-        }));
-        posts.push(fragmentWithComment);
-    }, []);
+    const processAfter = (after) => {
+        if (after) setRemain(Number(after));
+        else {
+            posts = posts.flat();
+            console.log(posts);
+            transition(State.Completed, { bandInfo, posts });
+        }
+    };
 
     useMessenger(
         (messenger) => {
             if (!max) {
                 posts = [];
 
-                messenger.send(messenger.Destination.Inject, { api: 'getPosts' }, (response) => {
-                    (async () => {
-                        if (response.result_code !== 1) {
-                            // TODO: 오류 처리
-                            console.error(response);
-                            return;
-                        }
-
-                        await processFragment(messenger, filterPosts(response.result_data.items, criteria));
-
-                        setMax(response.result_data.items[0].post_no);
-                        setRemain(Number(response.result_data.paging.next_params.after));
-                    })();
+                processPosts(messenger, criteria).then(({ after, max }) => {
+                    processAfter(after);
+                    setMax(max);
                 });
-            } else if (remain >= 0) {
-                messenger.send(messenger.Destination.Inject, { api: 'getPosts', after: remain }, (response) => {
-                    (async () => {
-                        if (response.result_code !== 1) {
-                            // TODO: 오류 처리
-                            console.error(response);
-                            return;
-                        }
-
-                        await processFragment(messenger, filterPosts(response.result_data.items, criteria));
-
-                        let after = response.result_data.paging.next_params?.after;
-
-                        if (after) setRemain(Number(after));
-                        else {
-                            posts = posts.flat();
-                            console.log(posts);
-                            transition(State.Completed, { bandInfo, posts });
-                        }
-                    })();
-                });
-            }
+            } else if (remain >= 0) processPosts(messenger, criteria, remain).then(({ after }) => processAfter(after));
         },
         [max, remain]
     );
