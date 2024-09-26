@@ -18,6 +18,8 @@ let posts = [];
 
 const sortComments = (comments) => comments.sort((a, b) => a.comment_id - b.comment_id);
 
+const sortPosts = (posts) => posts.sort((a, b) => a.post_no - b.post_no);
+
 const processComments = (messenger, post, previousParams, commentId) =>
     new Promise((resolve, reject) => {
         messenger.send(
@@ -108,7 +110,7 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
     const processAfter = (after) => {
         if (after) setRemain(Number(after));
         else {
-            posts = posts.flat();
+            posts = sortPosts(posts.flat());
             console.log(posts);
             transition(State.Completed, { bandInfo, posts });
         }
