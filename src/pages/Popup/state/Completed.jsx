@@ -65,15 +65,19 @@ export const Completed = ({ transition, bandInfo, posts }) => {
 
     const onDownload = () => {
         const browser = getBrowser();
-        const id = crypto.randomUUID();
+        const id = crypto.randomUUID(); // create UUID for the export
 
+        // Set bandInfo and posts with id key into the local extension storage
         // ref: https://developer.chrome.com/docs/extensions/reference/api/storage
-        browser.storage.local.set(Object.fromEntries([[id, { bandInfo, posts }]])).then(() => {
+        browser.storage.local.set(Object.fromEntries([[id, { bandInfo, posts, ts: new Date() }]])).then(() => {
             console.log(id);
         });
 
-        // TODO: 확장의 print page를 표시 (이 때, ID를 함께 제공)
-        alert('TODO: implement download routine');
+        // Open print tab with id
+        // ref: https://developer.chrome.com/docs/extensions/reference/api/tabs#open_an_extension_page_in_a_new_tab
+        browser.tabs.create({
+            url: `print.html?id=${id}`,
+        });
     };
 
     return (
