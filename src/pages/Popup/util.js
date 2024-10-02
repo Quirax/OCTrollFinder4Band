@@ -20,17 +20,6 @@ const messenger = getBrowserMessenger(Destination.Popup, Destination.Content);
  */
 export const useMessenger = (effect, deps) => useEffect(() => effect(messenger), deps);
 
-/**
- * @returns {typeof chrome}
- */
-export const getBrowser = () => self.browser || self.chrome;
-
-/**
- * @param {(browser: typeof chrome) => (void | () => void)} effect
- * @param {React.DependencyList | undefined} deps
- */
-export const useBrowser = (effect, deps) => useEffect(() => effect(getBrowser()), deps);
-
 export const getDateString = (today) =>
     `${today.getFullYear()}-` +
     `${String(today.getMonth() + 1).padStart(2, '0')}-` +

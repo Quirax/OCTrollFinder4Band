@@ -2,7 +2,8 @@ import React from 'react';
 import { styled } from 'styled-components';
 import { State } from '.';
 import { BottomButton } from '../common';
-import { getBrowser, getDateString } from '../util';
+import { getBrowser } from '../../util';
+import { getDateString } from '../util';
 
 const H2 = styled.h2`
     margin: 0;
