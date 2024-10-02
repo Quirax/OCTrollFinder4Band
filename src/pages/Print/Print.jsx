@@ -2,14 +2,22 @@ import React from 'react';
 import './Print.css';
 
 const Print = () => {
-    // TODO: 전달받은 ID 확인
-    // TODO: storage로부터 ID에 해당하는 자료 가져오기
+    // Get id from query string
+    // ref: https://velog.io/@nnakki/Javascript-URL-Query-String-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0
+    const id = new URLSearchParams(location.search).get('id');
+
+    // Get data with key = id from the local extension storage
     // ref: https://developer.chrome.com/docs/extensions/reference/api/storage
+    chrome.storage.local.get([id]).then((result) => {
+        console.log(result);
+        // if none => {}
+        // else => {id: {...}}
+    });
 
     return (
         <div className="container">
             <h1>Print Screen</h1>
-            {/* TODO: 가져온 자료를 화면에 뿌리기 */}
+            {id}
         </div>
     );
 };
