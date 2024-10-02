@@ -26,6 +26,11 @@ export const useMessenger = (effect, deps) => useEffect(() => effect(messenger),
  */
 export const useBrowser = (effect, deps) => useEffect(() => effect(self.browser || self.chrome), deps);
 
+export const getDateString = (today) =>
+    `${today.getFullYear()}-` +
+    `${String(today.getMonth() + 1).padStart(2, '0')}-` +
+    `${String(today.getDate()).padStart(2, '0')}`;
+
 Array.prototype.promiseAll = function (callback) {
     return Promise.all(this.map(callback));
 };

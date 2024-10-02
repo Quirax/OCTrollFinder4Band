@@ -2,6 +2,7 @@ import React from 'react';
 import { styled } from 'styled-components';
 import { State } from '.';
 import { BottomButton } from '../common';
+import { getDateString } from '../util';
 
 const H2 = styled.h2`
     margin: 0;
@@ -60,7 +61,7 @@ const CreateNewButton = styled(BottomButton)`
 `;
 
 export const Completed = ({ transition, bandInfo, posts }) => {
-    // TODO: 파일명 생성
+    const fileName = `${bandInfo.name} (${getDateString(new Date())})`;
 
     const onDownload = () => {
         // TODO: bandInfo 및 posts를 고유 ID와 함께 storage에 저장
@@ -76,7 +77,7 @@ export const Completed = ({ transition, bandInfo, posts }) => {
             <ExportInfo>
                 {/* TODO: get data from Inject */}
                 <img src={bandInfo.cover} />
-                <FileName>{bandInfo.name} (2024-08-27)</FileName>
+                <FileName>{fileName}</FileName>
                 <Extension>.pdf</Extension>
             </ExportInfo>
             <DownloadButton onClick={onDownload}>다운로드</DownloadButton>
