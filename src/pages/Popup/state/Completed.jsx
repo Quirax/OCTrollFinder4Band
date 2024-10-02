@@ -2,7 +2,7 @@ import React from 'react';
 import { styled } from 'styled-components';
 import { State } from '.';
 import { BottomButton } from '../common';
-import { getDateString } from '../util';
+import { getBrowser, getDateString } from '../util';
 
 const H2 = styled.h2`
     margin: 0;
@@ -64,10 +64,15 @@ export const Completed = ({ transition, bandInfo, posts }) => {
     const fileName = `${bandInfo.name} (${getDateString(new Date())})`;
 
     const onDownload = () => {
-        // TODO: bandInfo 및 posts를 고유 ID와 함께 storage에 저장
-        // TODO: 확장의 print page를 표시 (이 때, ID를 함께 제공)
+        const browser = getBrowser();
+        const id = crypto.randomUUID();
+
         // ref: https://developer.chrome.com/docs/extensions/reference/api/storage
-        console.log(posts);
+        browser.storage.local.set(Object.fromEntries([[id, { bandInfo, posts }]])).then(() => {
+            console.log(id);
+        });
+
+        // TODO: 확장의 print page를 표시 (이 때, ID를 함께 제공)
         alert('TODO: implement download routine');
     };
 
@@ -75,7 +80,6 @@ export const Completed = ({ transition, bandInfo, posts }) => {
         <>
             <H2>작업을 완료하였습니다</H2>
             <ExportInfo>
-                {/* TODO: get data from Inject */}
                 <img src={bandInfo.cover} />
                 <FileName>{fileName}</FileName>
                 <Extension>.pdf</Extension>
