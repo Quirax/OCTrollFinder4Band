@@ -60,7 +60,9 @@ const processAllComments = async (messenger, post, commentId) => {
     let comments = [];
 
     for (let pp; ; ) {
-        let result = await processComments(messenger, post, pp, commentId).catch((e) => reject(e));
+        let result = await processComments(messenger, post, pp, commentId).catch(function (e) {
+            throw e;
+        });
         comments.push(result.items);
         if (!(pp = result.previousParams)) break;
     }
