@@ -70,7 +70,7 @@ export const Completed = ({ transition, bandInfo, posts }) => {
 
         // Set bandInfo and posts with id key into the local extension storage
         // ref: https://developer.chrome.com/docs/extensions/reference/api/storage
-        browser.storage.local.set(Object.fromEntries([[id, { bandInfo, posts, ts: new Date() }]])).then(() => {
+        browser.storage.local.set(Object.fromEntries([[id, { bandInfo, posts, ts: Date.now() }]])).then(() => {
             console.log(id);
         });
 

@@ -29,6 +29,6 @@
             "matches": ["*://band.us/*"]
         }
     ],
-    "permissions": ["scripting", "tabs", "storage", "unlimitedStorage"],
+    "permissions": ["scripting", "tabs", "storage", "unlimitedStorage", "alarms"],
     "host_permissions": ["*://band.us/*"]
 }
