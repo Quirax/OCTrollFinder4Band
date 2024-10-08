@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import logo from '../../assets/img/logo.svg';
 import { State, ViewByState } from './state';
-import { useBrowser, useMessenger } from './util';
+import { useBrowser } from '../util';
 
 // ref: https://velog.io/@ayaan92/styled-components-.attrs%EC%97%90-%EB%8C%80%ED%95%98%EC%97%AC
 const LogoImg = styled.img.attrs(() => ({ src: logo }))`

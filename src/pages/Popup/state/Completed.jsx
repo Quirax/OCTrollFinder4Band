@@ -2,6 +2,8 @@ import React from 'react';
 import { styled } from 'styled-components';
 import { State } from '.';
 import { BottomButton } from '../common';
+import { getBrowser } from '../../util';
+import { getDateString } from '../util';
 
 const H2 = styled.h2`
     margin: 0;
@@ -60,18 +62,31 @@ const CreateNewButton = styled(BottomButton)`
 `;
 
 export const Completed = ({ transition, bandInfo, posts }) => {
+    const fileName = `${bandInfo.name} (${getDateString(new Date())})`;
+
     const onDownload = () => {
-        console.log(posts);
-        alert('TODO: implement download routine');
+        const browser = getBrowser();
+        const id = crypto.randomUUID(); // create UUID for the export
+
+        // Set bandInfo and posts with id key into the local extension storage
+        // ref: https://developer.chrome.com/docs/extensions/reference/api/storage
+        browser.storage.local.set(Object.fromEntries([[id, { bandInfo, posts, ts: Date.now() }]])).then(() => {
+            console.log(id);
+        });
+
+        // Open print tab with id
+        // ref: https://developer.chrome.com/docs/extensions/reference/api/tabs#open_an_extension_page_in_a_new_tab
+        browser.tabs.create({
+            url: `print.html?id=${id}`,
+        });
     };
 
     return (
         <>
             <H2>작업을 완료하였습니다</H2>
             <ExportInfo>
-                {/* TODO: get data from Inject */}
                 <img src={bandInfo.cover} />
-                <FileName>{bandInfo.name} (2024-08-27)</FileName>
+                <FileName>{fileName}</FileName>
                 <Extension>.pdf</Extension>
             </ExportInfo>
             <DownloadButton onClick={onDownload}>다운로드</DownloadButton>
