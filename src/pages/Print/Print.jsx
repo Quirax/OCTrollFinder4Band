@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import './Print.css';
 import { createEnum } from '../../modules/util';
 import { useBrowser } from '../util';
+import { example } from './example'; // TODO: remove after complete
+import { Document } from './Document';
 
 const State = createEnum('Retrieving', 'NotFound', 'Ready');
 
@@ -14,11 +16,7 @@ const StateProcessor = ({ state }) => {
         case State.NotFound:
             return <p>Not Found</p>;
         case State.Ready:
-            return (
-                <>
-                    <p>ready</p>
-                </>
-            );
+            return <Document data={arg} />;
     }
 };
 
@@ -43,6 +41,7 @@ const Print = () => {
     return (
         <div className="container">
             <h1>Print Screen</h1>
+            {/* <Document data={example} /> */}
             <StateProcessor state={state} />
         </div>
     );
