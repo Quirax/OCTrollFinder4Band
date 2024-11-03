@@ -34,7 +34,7 @@ var options = {
         injectScript: path.join(__dirname, 'src', 'pages', 'Inject', 'index.js'),
         devtools: path.join(__dirname, 'src', 'pages', 'Devtools', 'index.js'),
         panel: path.join(__dirname, 'src', 'pages', 'Panel', 'index.jsx'),
-        print: path.join(__dirname, 'src', 'pages', 'Print', 'index.jsx'),
+        stat: path.join(__dirname, 'src', 'pages', 'Stat', 'index.jsx'),
     },
     chromeExtensionBoilerplate: {
         notHotReload: ['background', 'contentScript', 'devtools', 'injectScript'],
@@ -194,9 +194,9 @@ var options = {
             cache: false,
         }),
         new HtmlWebpackPlugin({
-            template: path.join(__dirname, 'src', 'pages', 'Print', 'index.html'),
-            filename: 'print.html',
-            chunks: ['print'],
+            template: path.join(__dirname, 'src', 'pages', 'Stat', 'index.html'),
+            filename: 'stat.html',
+            chunks: ['stat'],
             cache: false,
         }),
     ].filter(Boolean),

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Print.css';
+import './Stat.css';
 import { createEnum } from '../../modules/util';
 import { useBrowser } from '../util';
 // import { example } from './example'; // TODO: remove after complete
@@ -20,7 +20,7 @@ const StateProcessor = ({ state }) => {
     }
 };
 
-const Print = () => {
+const Stat = () => {
     const [state, setState] = useState([State.Retrieving, {}]);
 
     // Get id from query string
@@ -40,11 +40,11 @@ const Print = () => {
 
     return (
         <div className="container">
-            <h1>Print Screen</h1>
+            <h1>Stat Screen</h1>
             {/* <Document data={example} /> */}
             <StateProcessor state={state} />
         </div>
     );
 };
 
-export default Print;
+export default Stat;
