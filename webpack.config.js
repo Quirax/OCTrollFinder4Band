@@ -61,6 +61,7 @@ var options = {
                     {
                         loader: 'sass-loader',
                         options: {
+                            sassOptions: { silenceDeprecations: ['legacy-js-api'] },
                             sourceMap: true,
                         },
                     },

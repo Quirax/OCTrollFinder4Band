@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './Print.css';
 import { createEnum } from '../../modules/util';
 import { useBrowser } from '../util';
-import { example } from './example'; // TODO: remove after complete
+// import { example } from './example'; // TODO: remove after complete
 import { Document } from './Document';
 
 const State = createEnum('Retrieving', 'NotFound', 'Ready');

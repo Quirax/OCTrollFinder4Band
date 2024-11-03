@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "Band PDF Export",
-    "description": "A Chrome extension that exports all posts, comments and media of a Band into one PDF file.",
+    "name": "OCTrollFinder4Band",
+    "description": "A chrome extension to find trolls in OC community on Band",
     "options_page": "options.html",
     "background": { "service_worker": "background.bundle.js" },
     "action": {

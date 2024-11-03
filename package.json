@@ -1,11 +1,11 @@
 {
-    "name": "Band PDF Export",
+    "name": "OCTrollFinder4Band",
     "version": "1.0.0",
-    "description": "A Chrome extension that exports all posts, comments and media of a Band into one PDF file.",
+    "description": "A chrome extension to find trolls in OC community on Band",
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/Quirax/band-pdf-export.git"
+        "url": "https://github.com/Quirax/OCTrollFinder4Band.git"
     },
     "scripts": {
         "build": "node utils/build.js",
