@@ -155,7 +155,7 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
     return (
         <>
             <label>
-                PDF로 내보내는 중...
+                분석을 준비하는 중...
                 <ProgressBar value={Number.isInteger(max) && Number.isInteger(remain) && max - remain} max={max} />
                 {Number.isInteger(max) && Number.isInteger(remain) && `(${max - remain} / ${max})`}
             </label>

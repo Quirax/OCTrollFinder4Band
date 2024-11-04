@@ -93,7 +93,7 @@ export const DateConstraints = ({ criteriaRegistry, defaultStart = new Date(), d
                 let date = new Date(post.created_at);
                 return new Date(dateStart) <= date && date <= new Date(dateEnd);
             }}
-            label="특정 기간 내 게시물만 내보내기"
+            label="특정 기간 내 게시물만 분석하기"
         >
             기간: <input type="date" id="date_start" value={dateStart} onChange={(e) => setDateStart(e.target.value)} />
             {' ~ '}

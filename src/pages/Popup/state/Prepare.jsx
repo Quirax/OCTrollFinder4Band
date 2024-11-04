@@ -104,7 +104,7 @@ export const Prepare = ({ transition }) => {
                     defaultEnd={new Date(bandInfo.updated_at_status.post)}
                 />
             </CriteriaContainer>
-            <BottomButton onClick={onStart}>현재 밴드를 PDF로 내보내기</BottomButton>
+            <BottomButton onClick={onStart}>현재 밴드 분석하기</BottomButton>
         </>
     );
 };
