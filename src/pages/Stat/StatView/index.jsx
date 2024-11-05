@@ -1,5 +1,13 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
+
+const Variables = createGlobalStyle`
+    :root {
+        --header-height: 3rem;
+        --stattype-width: 320px;
+        --content-padding: 1rem;
+    }
+`;
 
 const Header = styled.header.attrs(({}) => ({
     children: (
@@ -8,14 +16,12 @@ const Header = styled.header.attrs(({}) => ({
         </>
     ),
 }))`
-    height: 3rem;
+    height: var(--header-height);
     width: 100%;
     background-color: white;
-    line-height: 3rem;
+    line-height: var(--header-height);
     border-bottom: 1px solid black;
     box-sizing: border-box;
-    position: fixed;
-    top: 0;
 
     h1 {
         margin: 0;
@@ -23,9 +29,9 @@ const Header = styled.header.attrs(({}) => ({
 `;
 
 const Main = styled.main.attrs({})`
-    min-height: calc(100vh - 3rem);
+    height: calc(100vh - var(--header-height));
     width: 100%;
-    margin-top: 3rem;
+    display: flex;
 `;
 
 const StatList = styled.nav.attrs(({ children }) => ({
@@ -37,10 +43,10 @@ const StatList = styled.nav.attrs(({ children }) => ({
     ),
 }))`
     height: 100%;
-    width: 300px;
+    width: var(--stattype-width);
     border-right: 1px solid black;
     box-sizing: border-box;
-    position: fixed;
+    flex: 0 0 auto;
 
     h2 {
         padding-left: 1rem;
@@ -71,17 +77,19 @@ const AbstractStatView = styled.section.attrs(({ $title, $description, $chartDat
         <>
             <h2>{$title}</h2>
             <p>{$description}</p>
-            <div className="graph">Graph!</div>
+            <div class="graph">Graph!</div>
         </>
     ),
 }))`
-    padding: 1rem;
-    margin-left: 300px;
-    min-height: calc(100% - 2rem);
+    padding: var(--content-padding);
+    width: 100%;
+    height: calc(100% - (var(--content-padding) * 2));
+    display: flex;
+    flex-direction: column;
 
     & > div.graph {
         width: 100%;
-        aspect-ratio: 16 / 9;
+        height: 100%;
         border: 1px solid black;
         box-sizing: border-box;
     }
@@ -90,6 +98,7 @@ const AbstractStatView = styled.section.attrs(({ $title, $description, $chartDat
 export const StatView = ({ data }) => {
     return (
         <>
+            <Variables />
             <Header />
             <Main>
                 <StatList>
