@@ -12,7 +12,7 @@ const LogoImg = styled.img.attrs(() => ({ src: logo }))`
     border-radius: 100px;
 `;
 
-const Title = styled.h1.attrs(() => ({ children: 'Band PDF Export' }))``;
+const Title = styled.h1.attrs(() => ({ children: 'OCTrollFinder4Band' }))``;
 
 /**
  * @typedef CriteriaRegistry

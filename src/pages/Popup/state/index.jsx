@@ -2,10 +2,9 @@ import React, { useCallback, useState } from 'react';
 import { Prepare } from './Prepare';
 import { createEnum } from '../../../modules/util';
 import { Processing } from './Processing';
-import { Completed } from './Completed';
 import { Non_Band } from './Non_Band';
 
-export const State = createEnum('Non_Band', 'Prepare', 'Processing', 'Completed');
+export const State = createEnum('Non_Band', 'Prepare', 'Processing');
 
 export const ViewByState = ({ defaultState }) => {
     const [state, setState] = useState([defaultState || State.Prepare, {}]);
@@ -21,8 +20,6 @@ export const ViewByState = ({ defaultState }) => {
             return <Prepare {...args} />;
         case State.Processing:
             return <Processing {...args} />;
-        case State.Completed:
-            return <Completed {...args} />;
         case State.Non_Band:
             return <Non_Band {...args} />;
         default:

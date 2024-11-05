@@ -1,4 +1,7 @@
 {
     "editor.formatOnSave": true,
-    "typescript.tsdk": "node_modules\\typescript\\lib"
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "terminal.integrated.autoReplies": {
+        "일괄 작업을 끝내시겠습니까 (Y/N)?": "Y\r"
+    }
 }

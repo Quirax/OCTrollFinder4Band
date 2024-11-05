@@ -4,6 +4,7 @@ import { State } from '.';
 import { BottomButton } from '../common';
 import { filterPosts } from '../Criteria';
 import { useMessenger } from '../util';
+import { getBrowser } from '../../util';
 
 const CancelButton = styled(BottomButton)`
     background-color: #aaa;
@@ -98,6 +99,23 @@ const processPosts = (messenger, criteria, after) =>
         })
     );
 
+const forwardToStat = (bandInfo, posts) => {
+    const browser = getBrowser();
+    const id = crypto.randomUUID(); // create UUID for the export
+
+    // Set bandInfo and posts with id key into the local extension storage
+    // ref: https://developer.chrome.com/docs/extensions/reference/api/storage
+    browser.storage.local.set(Object.fromEntries([[id, { bandInfo, posts, ts: Date.now() }]])).then(() => {
+        console.log(id);
+    });
+
+    // Open print tab with id
+    // ref: https://developer.chrome.com/docs/extensions/reference/api/tabs#open_an_extension_page_in_a_new_tab
+    browser.tabs.create({
+        url: `stat.html?id=${id}`,
+    });
+};
+
 export const Processing = ({ transition, criteria, bandInfo }) => {
     /**
      * @type {[number | undefined, React.Dispatch<React.SetStateAction<number | undefined>>]}
@@ -114,7 +132,9 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
         else {
             posts = sortPosts(posts.flat());
             console.log(posts);
-            transition(State.Completed, { bandInfo, posts });
+
+            // Stat screen으로 변경
+            forwardToStat(bandInfo, posts);
         }
     };
 
@@ -135,7 +155,7 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
     return (
         <>
             <label>
-                PDF로 내보내는 중...
+                분석을 준비하는 중...
                 <ProgressBar value={Number.isInteger(max) && Number.isInteger(remain) && max - remain} max={max} />
                 {Number.isInteger(max) && Number.isInteger(remain) && `(${max - remain} / ${max})`}
             </label>
