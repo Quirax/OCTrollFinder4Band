@@ -9,10 +9,10 @@ const Variables = createGlobalStyle`
     }
 `;
 
-const Header = styled.header.attrs(({}) => ({
+const Header = styled.header.attrs(({ $bandName }) => ({
     children: (
         <>
-            <h1>OCTrollFinder4Band</h1>
+            <h1>'{$bandName}' 통계</h1>
         </>
     ),
 }))`
@@ -99,7 +99,7 @@ export const StatView = ({ data }) => {
     return (
         <>
             <Variables />
-            <Header />
+            <Header $bandName={data.bandInfo.name} />
             <Main>
                 <StatList>
                     <Item $selected>사용자당 게시물 수</Item>

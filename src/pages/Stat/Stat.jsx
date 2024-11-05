@@ -32,8 +32,10 @@ const Stat = () => {
         browser.storage.local.get([id]).then((result) => {
             console.log(result);
 
-            if (result[id]) setState([State.Ready, result[id]]);
-            else setState([State.NotFound, {}]);
+            if (result[id]) {
+                document.title = `'${result[id].bandInfo.name}' 통계`;
+                setState([State.Ready, result[id]]);
+            } else setState([State.NotFound, {}]);
         });
     }, []);
 
