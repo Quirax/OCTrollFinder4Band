@@ -8,7 +8,7 @@ const AbstractStatView = styled.section.attrs(
             <>
                 <h2>{$title}</h2>
                 <p>{$description}</p>
-                <div class="graph">
+                <div className="graph">
                     <ResponsiveContainer
                         width="100%"
                         height="100%"
