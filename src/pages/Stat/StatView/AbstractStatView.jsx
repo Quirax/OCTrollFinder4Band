@@ -19,7 +19,7 @@ const AbstractStatView = styled.section.attrs(
                                 <YAxis />
                                 <Tooltip />
                                 <Legend />
-                                <Line type="monotone" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} />
+                                <Line type="monotone" dataKey="value" stroke="#8884d8" />
                             </LineChart>
                         }
                         {...$chartOptions($chartData)}

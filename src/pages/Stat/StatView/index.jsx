@@ -77,18 +77,7 @@ const Item = styled.li.attrs({})`
 const SampleStatView = createStatView(
     '사용자당 게시물 수',
     '각 사용자가 작성한 게시물의 개수입니다.',
-    (data) => ({
-        children: (
-            <AreaChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Area type="monotone" dataKey="value" stroke="#8884d8" fill="#8884d8" />
-            </AreaChart>
-        ),
-    }),
+    (data) => ({}),
     () => [
         {
             name: 'Page A',
