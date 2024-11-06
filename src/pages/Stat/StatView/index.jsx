@@ -2,8 +2,12 @@ import React from 'react';
 import styled, { createGlobalStyle, css } from 'styled-components';
 import { createStatView } from './AbstractStatView';
 import { CartesianGrid, Legend, Line, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Area } from 'recharts';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const statTypeWidth = 320;
+
+const mediaMinWidth = () => statTypeWidth * 3;
 
 const Variables = createGlobalStyle`
     :root {
@@ -13,9 +17,12 @@ const Variables = createGlobalStyle`
     }
 `;
 
-const Header = styled.header.attrs(({ $bandName }) => ({
+const Header = styled.header.attrs(({ $bandName, $onToggleNav, $showNav }) => ({
     children: (
         <>
+            <button onClick={$onToggleNav}>
+                <FontAwesomeIcon icon={$showNav ? faXmark : faBars} />
+            </button>
             <h1>'{$bandName}' 통계</h1>
         </>
     ),
@@ -26,9 +33,29 @@ const Header = styled.header.attrs(({ $bandName }) => ({
     line-height: var(--header-height);
     border-bottom: 1px solid black;
     box-sizing: border-box;
+    display: flex;
 
     h1 {
         margin: 0;
+    }
+
+    button {
+        height: var(--header-height);
+        width: var(--header-height);
+        flex: 0 0 auto;
+        color: black;
+        background-color: transparent;
+        padding: 0;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+        display: none;
+    }
+
+    @media screen and (max-width: ${mediaMinWidth}px) {
+        button {
+            display: initial;
+        }
     }
 `;
 
@@ -62,7 +89,7 @@ const StatList = styled.nav.attrs(({ children }) => ({
         border-top: 1px solid black;
     }
 
-    @media screen and (max-width: ${() => statTypeWidth * 2}px) {
+    @media screen and (max-width: ${mediaMinWidth}px) {
         ${({ $show }) =>
             $show
                 ? css`
@@ -90,6 +117,7 @@ const Item = styled.li.attrs({})`
     justify-content: center;
     background-color: ${({ $selected }) => ($selected ? 'black' : 'auto')};
     color: ${({ $selected }) => ($selected ? 'white' : 'auto')};
+    cursor: pointer;
 `;
 
 const SampleStatView = createStatView(
@@ -129,10 +157,12 @@ const SampleStatView = createStatView(
 );
 
 export const StatView = ({ data }) => {
+    const onToggleNav = () => {};
+
     return (
         <>
             <Variables />
-            <Header $bandName={data.bandInfo.name} />
+            <Header $bandName={data.bandInfo.name} $showNav={false} $onToggleNav={onToggleNav} />
             <Main>
                 <StatList $show={false}>
                     <Item title={SampleStatView.description} $selected>
