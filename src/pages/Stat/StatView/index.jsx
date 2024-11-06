@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
+import { createStatView } from './AbstractStatView';
 
 const Variables = createGlobalStyle`
     :root {
@@ -72,28 +73,7 @@ const Item = styled.li.attrs({})`
     color: ${({ $selected }) => ($selected ? 'white' : 'auto')};
 `;
 
-const AbstractStatView = styled.section.attrs(({ $title, $description, $chartData, $chartOptions }) => ({
-    children: (
-        <>
-            <h2>{$title}</h2>
-            <p>{$description}</p>
-            <div class="graph">Graph!</div>
-        </>
-    ),
-}))`
-    padding: var(--content-padding);
-    width: 100%;
-    height: calc(100% - (var(--content-padding) * 2));
-    display: flex;
-    flex-direction: column;
-
-    & > div.graph {
-        width: 100%;
-        height: 100%;
-        border: 1px solid black;
-        box-sizing: border-box;
-    }
-`;
+const SampleStatView = createStatView('사용자당 게시물 수', '각 사용자가 작성한 게시물의 개수입니다.');
 
 export const StatView = ({ data }) => {
     return (
@@ -102,10 +82,12 @@ export const StatView = ({ data }) => {
             <Header $bandName={data.bandInfo.name} />
             <Main>
                 <StatList>
-                    <Item $selected>사용자당 게시물 수</Item>
+                    <Item title={SampleStatView.description} $selected>
+                        {SampleStatView.title}
+                    </Item>
                     <Item>사용자당 게시물 당 반응 수</Item>
                 </StatList>
-                <AbstractStatView $title="사용자당 게시물 수" $description="각 사용자가 작성한 게시물의 개수입니다." />
+                <SampleStatView.View />
             </Main>
         </>
     );
