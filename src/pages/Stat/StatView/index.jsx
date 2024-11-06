@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { createGlobalStyle, css } from 'styled-components';
 import { createStatView } from './AbstractStatView';
 import { CartesianGrid, Legend, Line, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Area } from 'recharts';
@@ -37,6 +37,7 @@ const Header = styled.header.attrs(({ $bandName, $onToggleNav, $showNav }) => ({
 
     h1 {
         margin: 0;
+        padding-left: 1rem;
     }
 
     button {
@@ -55,6 +56,10 @@ const Header = styled.header.attrs(({ $bandName, $onToggleNav, $showNav }) => ({
     @media screen and (max-width: ${mediaMinWidth}px) {
         button {
             display: initial;
+        }
+
+        h1 {
+            padding-left: 0;
         }
     }
 `;
@@ -157,14 +162,30 @@ const SampleStatView = createStatView(
 );
 
 export const StatView = ({ data }) => {
-    const onToggleNav = () => {};
+    const [showNav, setShowNav] = useState(false);
+
+    const onToggleNav = () => {
+        setShowNav(!showNav);
+    };
+
+    useEffect(() => {
+        const media = matchMedia(`(max-width: ${mediaMinWidth()}px)`);
+
+        const onMatchChange = (e) => {
+            if (!e.matches) setShowNav(false);
+        };
+
+        media.addEventListener('change', onMatchChange);
+
+        return () => media.removeEventListener('change', onMatchChange);
+    }, []);
 
     return (
         <>
             <Variables />
-            <Header $bandName={data.bandInfo.name} $showNav={false} $onToggleNav={onToggleNav} />
+            <Header $bandName={data.bandInfo.name} $showNav={showNav} $onToggleNav={onToggleNav} />
             <Main>
-                <StatList $show={false}>
+                <StatList $show={showNav}>
                     <Item title={SampleStatView.description} $selected>
                         {SampleStatView.title}
                     </Item>
