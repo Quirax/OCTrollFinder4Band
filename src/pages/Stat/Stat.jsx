@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import './Stat.css';
 import { createEnum } from '../../modules/util';
 import { useBrowser } from '../util';
-// import { example } from './example'; // TODO: remove after complete
-import { Document } from './Document';
+import { StatView } from './StatView';
 
 const State = createEnum('Retrieving', 'NotFound', 'Ready');
 
@@ -16,7 +15,7 @@ const StateProcessor = ({ state }) => {
         case State.NotFound:
             return <p>Not Found</p>;
         case State.Ready:
-            return <Document data={arg} />;
+            return <StatView data={arg} />;
     }
 };
 
@@ -33,15 +32,15 @@ const Stat = () => {
         browser.storage.local.get([id]).then((result) => {
             console.log(result);
 
-            if (result[id]) setState([State.Ready, result[id]]);
-            else setState([State.NotFound, {}]);
+            if (result[id]) {
+                document.title = `'${result[id].bandInfo.name}' 통계`;
+                setState([State.Ready, result[id]]);
+            } else setState([State.NotFound, {}]);
         });
     }, []);
 
     return (
         <div className="container">
-            <h1>Stat Screen</h1>
-            {/* <Document data={example} /> */}
             <StateProcessor state={state} />
         </div>
     );

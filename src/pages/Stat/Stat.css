@@ -1,26 +1,11 @@
 body {
-    background-color: #242424;
+    margin: 0;
 }
 
 .container {
-    color: #ffffff;
-}
-
-@media print {
-    /* 배경 설정 강제 적용 */
-    /* ref: https://tarot-story.tistory.com/47 */
-    * {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-
-    body {
-        background: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .container > :not(.page) {
-        display: none;
-    }
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
