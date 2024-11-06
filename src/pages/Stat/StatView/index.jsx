@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle, css } from 'styled-components';
 import { createStatView } from './AbstractStatView';
 import { CartesianGrid, Legend, Line, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Area } from 'recharts';
 
@@ -63,9 +63,19 @@ const StatList = styled.nav.attrs(({ children }) => ({
     }
 
     @media screen and (max-width: ${() => statTypeWidth * 2}px) {
-        & {
-            display: none;
-        }
+        ${({ $show }) =>
+            $show
+                ? css`
+                      position: fixed;
+                      top: var(--header-height);
+                      left: 0;
+                      width: 100%;
+                      background-color: white;
+                      z-index: 1;
+                  `
+                : css`
+                      display: none;
+                  `}
     }
 `;
 
@@ -124,7 +134,7 @@ export const StatView = ({ data }) => {
             <Variables />
             <Header $bandName={data.bandInfo.name} />
             <Main>
-                <StatList>
+                <StatList $show={false}>
                     <Item title={SampleStatView.description} $selected>
                         {SampleStatView.title}
                     </Item>
