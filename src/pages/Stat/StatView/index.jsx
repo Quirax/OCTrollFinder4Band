@@ -73,7 +73,41 @@ const Item = styled.li.attrs({})`
     color: ${({ $selected }) => ($selected ? 'white' : 'auto')};
 `;
 
-const SampleStatView = createStatView('사용자당 게시물 수', '각 사용자가 작성한 게시물의 개수입니다.');
+const SampleStatView = createStatView(
+    '사용자당 게시물 수',
+    '각 사용자가 작성한 게시물의 개수입니다.',
+    () => ({}),
+    () => [
+        {
+            name: 'Page A',
+            value: 2400,
+        },
+        {
+            name: 'Page B',
+            value: 2210,
+        },
+        {
+            name: 'Page C',
+            value: 2290,
+        },
+        {
+            name: 'Page D',
+            value: 2000,
+        },
+        {
+            name: 'Page E',
+            value: 2181,
+        },
+        {
+            name: 'Page F',
+            value: 2500,
+        },
+        {
+            name: 'Page G',
+            value: 2100,
+        },
+    ]
+);
 
 export const StatView = ({ data }) => {
     return (
