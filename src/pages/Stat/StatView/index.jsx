@@ -3,10 +3,12 @@ import styled, { createGlobalStyle } from 'styled-components';
 import { createStatView } from './AbstractStatView';
 import { CartesianGrid, Legend, Line, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Area } from 'recharts';
 
+const statTypeWidth = 320;
+
 const Variables = createGlobalStyle`
     :root {
         --header-height: 3rem;
-        --stattype-width: 320px;
+        --stattype-width: ${() => statTypeWidth}px;
         --content-padding: 1rem;
     }
 `;
@@ -58,6 +60,12 @@ const StatList = styled.nav.attrs(({ children }) => ({
         list-style: none;
         padding: 0;
         border-top: 1px solid black;
+    }
+
+    @media screen and (max-width: ${() => statTypeWidth * 2}px) {
+        & {
+            display: none;
+        }
     }
 `;
 
