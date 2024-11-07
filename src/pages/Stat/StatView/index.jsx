@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ArticlePerUser } from './ArticlePerUser';
 import { TotalReactsPerUser } from './TotalReactsPerUser';
+import { AvgReactsPerUser } from './AvgReactsPerUser';
 
 const statTypeWidth = 320;
 
@@ -127,7 +128,7 @@ const Item = styled.li.attrs({})`
     cursor: pointer;
 `;
 
-const statViews = [ArticlePerUser, TotalReactsPerUser];
+const statViews = [ArticlePerUser, TotalReactsPerUser, AvgReactsPerUser];
 
 export const StatView = ({ data }) => {
     const [showNav, setShowNav] = useState(false);
@@ -160,7 +161,7 @@ export const StatView = ({ data }) => {
                         </Item>
                     ))}
                 </StatList>
-                {statViews[1].View({ data })}
+                {statViews[2].View({ data })}
             </Main>
         </>
     );
