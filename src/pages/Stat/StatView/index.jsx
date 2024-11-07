@@ -136,7 +136,10 @@ export const StatView = ({ data }) => {
         setShowNav(!showNav);
     };
 
-    const onSelectView = (idx) => setCurrentView(idx);
+    const onSelectView = (idx) => {
+        setCurrentView(idx);
+        setShowNav(false);
+    };
 
     useEffect(() => {
         const media = matchMedia(`(max-width: ${mediaMinWidth()}px)`);
