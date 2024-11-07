@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import styled, { createGlobalStyle, css } from 'styled-components';
-import { createStatView } from './AbstractStatView';
-import { CartesianGrid, Legend, Line, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Area } from 'recharts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ArticlePerUser } from './ArticlePerUser';
@@ -132,10 +130,13 @@ const statViews = [ArticlePerUser, TotalReactsPerUser, AvgReactsPerUser];
 
 export const StatView = ({ data }) => {
     const [showNav, setShowNav] = useState(false);
+    const [currentView, setCurrentView] = useState(0);
 
     const onToggleNav = () => {
         setShowNav(!showNav);
     };
+
+    const onSelectView = (idx) => setCurrentView(idx);
 
     useEffect(() => {
         const media = matchMedia(`(max-width: ${mediaMinWidth()}px)`);
@@ -156,12 +157,17 @@ export const StatView = ({ data }) => {
             <Main>
                 <StatList $show={showNav}>
                     {statViews.map((view, idx) => (
-                        <Item key={`statView-${idx}`} title={view.description} $selected={false}>
+                        <Item
+                            key={`statView-${idx}`}
+                            title={view.description}
+                            $selected={idx === currentView}
+                            onClick={() => onSelectView(idx)}
+                        >
                             {view.title}
                         </Item>
                     ))}
                 </StatList>
-                {statViews[2].View({ data })}
+                {statViews[currentView].View({ data })}
             </Main>
         </>
     );
