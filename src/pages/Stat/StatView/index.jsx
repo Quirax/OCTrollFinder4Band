@@ -5,6 +5,7 @@ import { CartesianGrid, Legend, Line, AreaChart, ResponsiveContainer, Tooltip, X
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ArticlePerUser } from './ArticlePerUser';
+import { TotalReactsPerUser } from './TotalReactsPerUser';
 
 const statTypeWidth = 320;
 
@@ -126,7 +127,7 @@ const Item = styled.li.attrs({})`
     cursor: pointer;
 `;
 
-const statViews = [ArticlePerUser];
+const statViews = [ArticlePerUser, TotalReactsPerUser];
 
 export const StatView = ({ data }) => {
     const [showNav, setShowNav] = useState(false);
@@ -159,7 +160,7 @@ export const StatView = ({ data }) => {
                         </Item>
                     ))}
                 </StatList>
-                {statViews[0].View({ data })}
+                {statViews[1].View({ data })}
             </Main>
         </>
     );
