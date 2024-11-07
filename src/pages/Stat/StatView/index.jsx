@@ -4,6 +4,7 @@ import { createStatView } from './AbstractStatView';
 import { CartesianGrid, Legend, Line, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Area } from 'recharts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { ArticlePerUser } from './ArticlePerUser';
 
 const statTypeWidth = 320;
 
@@ -125,41 +126,7 @@ const Item = styled.li.attrs({})`
     cursor: pointer;
 `;
 
-const SampleStatView = createStatView(
-    '사용자당 게시물 수',
-    '각 사용자가 작성한 게시물의 개수입니다.',
-    (data) => ({}),
-    () => [
-        {
-            name: 'Page A',
-            value: 2400,
-        },
-        {
-            name: 'Page B',
-            value: 2210,
-        },
-        {
-            name: 'Page C',
-            value: 2290,
-        },
-        {
-            name: 'Page D',
-            value: 2000,
-        },
-        {
-            name: 'Page E',
-            value: 2181,
-        },
-        {
-            name: 'Page F',
-            value: 2500,
-        },
-        {
-            name: 'Page G',
-            value: 2100,
-        },
-    ]
-);
+const statViews = [ArticlePerUser];
 
 export const StatView = ({ data }) => {
     const [showNav, setShowNav] = useState(false);
@@ -186,12 +153,13 @@ export const StatView = ({ data }) => {
             <Header $bandName={data.bandInfo.name} $showNav={showNav} $onToggleNav={onToggleNav} />
             <Main>
                 <StatList $show={showNav}>
-                    <Item title={SampleStatView.description} $selected>
-                        {SampleStatView.title}
-                    </Item>
-                    <Item>사용자당 게시물 당 반응 수</Item>
+                    {statViews.map((view, idx) => (
+                        <Item key={`statView-${idx}`} title={view.description} $selected={false}>
+                            {view.title}
+                        </Item>
+                    ))}
                 </StatList>
-                <SampleStatView.View />
+                {statViews[0].View({ data })}
             </Main>
         </>
     );
