@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import { State } from '.';
 import { BottomButton } from '../common';
-import { filterPosts } from '../Criteria';
 import { useMessenger } from '../util';
 import { getBrowser } from '../../util';
 
@@ -79,7 +78,7 @@ const processFragment = async (messenger, fragment) => {
     posts.push(fragmentWithComment);
 };
 
-const processPosts = (messenger, criteria, after) =>
+const processPosts = (messenger, after) =>
     new Promise((resolve) =>
         messenger.send(messenger.Destination.Inject, { api: 'getPosts', after }, (response) => {
             (async () => {
@@ -89,7 +88,7 @@ const processPosts = (messenger, criteria, after) =>
                     return;
                 }
 
-                await processFragment(messenger, filterPosts(response.result_data.items, criteria));
+                await processFragment(messenger, response.result_data.items);
 
                 resolve({
                     after: response.result_data.paging.next_params?.after,
@@ -116,7 +115,7 @@ const forwardToStat = (bandInfo, posts) => {
     });
 };
 
-export const Processing = ({ transition, criteria, bandInfo }) => {
+export const Processing = ({ transition, bandInfo }) => {
     /**
      * @type {[number | undefined, React.Dispatch<React.SetStateAction<number | undefined>>]}
      */
@@ -143,11 +142,11 @@ export const Processing = ({ transition, criteria, bandInfo }) => {
             if (!max) {
                 posts = [];
 
-                processPosts(messenger, criteria).then(({ after, max }) => {
+                processPosts(messenger).then(({ after, max }) => {
                     processAfter(after);
                     setMax(max);
                 });
-            } else if (remain >= 0) processPosts(messenger, criteria, remain).then(({ after }) => processAfter(after));
+            } else if (remain >= 0) processPosts(messenger, remain).then(({ after }) => processAfter(after));
         },
         [max, remain]
     );
