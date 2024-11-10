@@ -2,6 +2,9 @@ import React from 'react';
 import { ComposedChart, CartesianGrid, XAxis, YAxis, Tooltip, Area, Legend, Line } from 'recharts';
 import { createStatView } from './AbstractStatView';
 
+/**
+ * @type {import('./AbstractStatView').StatView}
+ */
 export const AvgReactsPerUser = createStatView(
     '사용자당 받은 평균 반응 수',
     '각 사용자가 작성한 게시물의 평균 조회수, 댓글 수 및 표정 수입니다. 총합의 내림차순으로 정렬됩니다.',

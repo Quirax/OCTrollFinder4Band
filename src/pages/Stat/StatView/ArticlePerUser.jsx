@@ -2,6 +2,9 @@ import React from 'react';
 import { AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, Area, Legend } from 'recharts';
 import { createStatView } from './AbstractStatView';
 
+/**
+ * @type {import('./AbstractStatView').StatView}
+ */
 export const ArticlePerUser = createStatView(
     '사용자당 게시물 및 댓글 개수',
     '각 사용자가 작성한 게시물 및 댓글의 개수입니다. 총합의 내림차순으로 정렬됩니다.',

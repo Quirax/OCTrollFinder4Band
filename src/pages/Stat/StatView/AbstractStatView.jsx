@@ -1,9 +1,25 @@
 import React from 'react';
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { generateCategoricalChart } from 'recharts/types/chart/generateCategoricalChart';
 import styled from 'styled-components';
 
+/**
+ * @typedef {any[]} ChartData
+ */
+
+/**
+ * @typedef ChartOptions
+ */
 const AbstractStatView = styled.section.attrs(
-    ({ $title, $description, $chartData = {}, $chartOptions = (data) => ({}) }) => ({
+    /**
+     * @param {object} attrs
+     * @param {string} attrs.$title The title of the stat view
+     * @param {string} attrs.$description The description of the stat view
+     * @param {ChartData} attrs.$chartData The data of chart shown in the stat view
+     * @param {(data: ChartData) => ChartOptions} attrs.$chartOptions The options of chart shown in the stat view
+     * @returns {import('styled-components').Attrs}
+     */
+    ({ $title, $description, $chartData = [], $chartOptions = (data) => ({}) }) => ({
         children: (
             <>
                 <h2>{$title}</h2>
@@ -43,8 +59,20 @@ const AbstractStatView = styled.section.attrs(
     }
 `;
 
-const commonChartDataGenerator = (data) => data; // TODO: implement chart data generator
+/**
+ * @typedef StatView
+ * @property {string} title The title of the stat view
+ * @property {string} description The description of the stat view
+ * @property {(props: { data: ChartData }) => React.JSX.Element} View The React View of the stat view
+ */
 
+/**
+ * @param {string} title The title of the stat view
+ * @param {string} description The description of the stat view
+ * @param {(data: ChartData) => ChartOptions} chartOptions The options of chart shown in the stat view
+ * @param {(data: object) => ChartData} chartDataGenerator A generator of chart data from input data
+ * @returns {StatView} The object describes the stat view
+ */
 export const createStatView = (
     title,
     description,
@@ -57,7 +85,7 @@ export const createStatView = (
         <AbstractStatView
             $title={title}
             $description={description}
-            $chartData={commonChartDataGenerator(chartDataGenerator(data))}
+            $chartData={chartDataGenerator(data)}
             $chartOptions={chartOptions}
         />
     ),
