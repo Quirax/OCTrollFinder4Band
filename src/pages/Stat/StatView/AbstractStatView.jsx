@@ -1,6 +1,5 @@
 import React from 'react';
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { generateCategoricalChart } from 'recharts/types/chart/generateCategoricalChart';
 import styled from 'styled-components';
 
 /**
