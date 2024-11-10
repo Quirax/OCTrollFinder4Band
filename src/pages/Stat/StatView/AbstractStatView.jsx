@@ -1,6 +1,13 @@
 import React from 'react';
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, Legend, Line, Area, ComposedChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import styled from 'styled-components';
+import { createEnum } from '../../../modules/util';
+
+/**
+ * @enum {{Line, Area}} The type of series
+ * @type {SeriesType}
+ */
+export const SeriesType = createEnum('Line', 'Area');
 
 /**
  * @typedef {any[]} ChartData
@@ -8,17 +15,26 @@ import styled from 'styled-components';
 
 /**
  * @typedef ChartOptions
+ * @property {string} categoryKey A key of chart data that describes category
+ * @property {boolean} extendXAxis A flag whether the chart needs to extend X axis
+ * @property {object[]} series A list of series
+ * @property {string} series.name A name of series
+ * @property {string} series.key A key of series in chart data
+ * @property {string} series.stroke A stroke color of series
+ * @property {string} series.fill A fill color of series
+ * @property {SeriesType} series.type A type of series
  */
+
 const AbstractStatView = styled.section.attrs(
     /**
      * @param {object} attrs
      * @param {string} attrs.$title The title of the stat view
      * @param {string} attrs.$description The description of the stat view
      * @param {ChartData} attrs.$chartData The data of chart shown in the stat view
-     * @param {(data: ChartData) => ChartOptions} attrs.$chartOptions The options of chart shown in the stat view
+     * @param {ChartOptions} attrs.$chartOptions The options of chart shown in the stat view
      * @returns {import('styled-components').Attrs}
      */
-    ({ $title, $description, $chartData = [], $chartOptions = (data) => ({}) }) => ({
+    ({ $title, $description, $chartData = [], $chartOptions = {} }) => ({
         children: (
             <>
                 <h2>{$title}</h2>
@@ -28,16 +44,51 @@ const AbstractStatView = styled.section.attrs(
                         width="100%"
                         height="100%"
                         children={
-                            <LineChart data={$chartData}>
+                            <ComposedChart data={$chartData}>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
+                                <XAxis
+                                    // ref: https://github.com/recharts/recharts/issues/397
+                                    dataKey={$chartOptions.categoryKey || 'name'}
+                                    {...($chartOptions.extendXAxis && {
+                                        textAnchor: 'end',
+                                        interval: 0,
+                                        angle: -40,
+                                        height: 100,
+                                    })}
+                                />
                                 <YAxis />
                                 <Tooltip />
-                                <Legend />
-                                <Line type="monotone" dataKey="value" stroke="#8884d8" />
-                            </LineChart>
+                                <Legend verticalAlign="top" />
+                                {($chartOptions.series || []).map(
+                                    ({ type, name, key, stroke, fill, stackId } = {}, idx) => {
+                                        switch (type) {
+                                            case 'Line':
+                                                return (
+                                                    <Line
+                                                        key={`series-${idx}`}
+                                                        type="monotone"
+                                                        dataKey={key}
+                                                        name={name}
+                                                        stroke={stroke}
+                                                    />
+                                                );
+                                            case 'Area':
+                                                return (
+                                                    <Area
+                                                        key={`series-${idx}`}
+                                                        type="monotone"
+                                                        dataKey={key}
+                                                        name={name}
+                                                        stroke={stroke}
+                                                        fill={fill}
+                                                        stackId={stackId}
+                                                    />
+                                                );
+                                        }
+                                    }
+                                )}
+                            </ComposedChart>
                         }
-                        {...$chartOptions($chartData)}
                     />
                 </div>
             </>
@@ -68,16 +119,11 @@ const AbstractStatView = styled.section.attrs(
 /**
  * @param {string} title The title of the stat view
  * @param {string} description The description of the stat view
- * @param {(data: ChartData) => ChartOptions} chartOptions The options of chart shown in the stat view
+ * @param {ChartOptions} chartOptions The options of chart shown in the stat view
  * @param {(data: object) => ChartData} chartDataGenerator A generator of chart data from input data
  * @returns {StatView} The object describes the stat view
  */
-export const createStatView = (
-    title,
-    description,
-    chartOptions = (data) => ({}),
-    chartDataGenerator = (data) => data
-) => ({
+export const createStatView = (title, description, chartOptions = {}, chartDataGenerator = (data) => data) => ({
     title,
     description,
     View: ({ data }) => (

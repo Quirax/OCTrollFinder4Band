@@ -1,6 +1,4 @@
-import React from 'react';
-import { AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, Area, Legend } from 'recharts';
-import { createStatView } from './AbstractStatView';
+import { createStatView, SeriesType } from './AbstractStatView';
 
 /**
  * @type {import('./AbstractStatView').StatView}
@@ -8,28 +6,27 @@ import { createStatView } from './AbstractStatView';
 export const ArticlePerUser = createStatView(
     '사용자당 게시물 및 댓글 개수',
     '각 사용자가 작성한 게시물 및 댓글의 개수입니다. 총합의 내림차순으로 정렬됩니다.',
-    (data) => ({
-        children: (
-            <AreaChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                    // ref: https://github.com/recharts/recharts/issues/397
-                    dataKey="name"
-                    textAnchor="end"
-                    sclaeToFit="true"
-                    verticalAnchor="start"
-                    interval={0}
-                    angle="-40"
-                    height={100}
-                />
-                <YAxis />
-                <Tooltip />
-                <Legend verticalAlign="top" />
-                <Area type="monotone" dataKey="posts" stackId="1" stroke="#8884d8" fill="#8884d8" />
-                <Area type="monotone" dataKey="comments" stackId="1" stroke="#82ca9d" fill="#82ca9d" />
-            </AreaChart>
-        ),
-    }),
+    {
+        extendXAxis: true,
+        series: [
+            {
+                name: '게시물 개수',
+                type: SeriesType.Area,
+                key: 'posts',
+                stroke: '#8884d8',
+                fill: '#8884d8',
+                stackId: 1,
+            },
+            {
+                name: '댓글 개수',
+                type: SeriesType.Area,
+                key: 'comments',
+                stroke: '#82ca9d',
+                fill: '#82ca9d',
+                stackId: 1,
+            },
+        ],
+    },
     (data) =>
         Object.values(
             data.posts.reduce((acc, post) => {
