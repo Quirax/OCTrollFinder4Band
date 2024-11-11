@@ -14,16 +14,36 @@ export const SeriesType = createEnum('Line', 'Area');
  */
 
 /**
+ * @typedef Series
+ * @property {string} name A name of series
+ * @property {string} key A key of series in chart data
+ * @property {string} stroke A stroke color of series
+ * @property {string} [fill] A fill color of series
+ * @property {SeriesType} type A type of series
+ * @property {string|number} [stackId] An id of stack for area series
+ */
+
+/**
  * @typedef ChartOptions
  * @property {string} categoryKey A key of chart data that describes category
  * @property {boolean} extendXAxis A flag whether the chart needs to extend X axis
- * @property {object[]} series A list of series
- * @property {string} series.name A name of series
- * @property {string} series.key A key of series in chart data
- * @property {string} series.stroke A stroke color of series
- * @property {string} series.fill A fill color of series
- * @property {SeriesType} series.type A type of series
+ * @property {Series[]} series A list of series
  */
+
+/**
+ * @param {Series[]} series
+ */
+const SeriesView = (series = []) =>
+    series.map(({ type, name, key, stroke, fill, stackId } = {}, idx) => {
+        switch (type) {
+            case 'Line':
+                return <Line key={`series-${idx}`} type="monotone" dataKey={key} {...{ name, stroke }} />;
+            case 'Area':
+                return (
+                    <Area key={`series-${idx}`} type="monotone" dataKey={key} {...{ name, stroke, fill, stackId }} />
+                );
+        }
+    });
 
 const AbstractStatView = styled.section.attrs(
     /**
@@ -59,34 +79,7 @@ const AbstractStatView = styled.section.attrs(
                                 <YAxis />
                                 <Tooltip />
                                 <Legend verticalAlign="top" />
-                                {($chartOptions.series || []).map(
-                                    ({ type, name, key, stroke, fill, stackId } = {}, idx) => {
-                                        switch (type) {
-                                            case 'Line':
-                                                return (
-                                                    <Line
-                                                        key={`series-${idx}`}
-                                                        type="monotone"
-                                                        dataKey={key}
-                                                        name={name}
-                                                        stroke={stroke}
-                                                    />
-                                                );
-                                            case 'Area':
-                                                return (
-                                                    <Area
-                                                        key={`series-${idx}`}
-                                                        type="monotone"
-                                                        dataKey={key}
-                                                        name={name}
-                                                        stroke={stroke}
-                                                        fill={fill}
-                                                        stackId={stackId}
-                                                    />
-                                                );
-                                        }
-                                    }
-                                )}
+                                {SeriesView($chartOptions.series)}
                             </ComposedChart>
                         }
                     />
