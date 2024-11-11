@@ -65,7 +65,7 @@ const formatDate = (date) =>
         .toString()
         .padStart(2, '0')}`;
 
-const CriteriaPanel = styled.fieldset.attrs(
+const CriteriaPanel = styled.details.attrs(
     /**
      * @param {object} attrs
      * @param {ChartOptions} attrs.$chartOptions The options of chart shown in the stat view
@@ -76,7 +76,7 @@ const CriteriaPanel = styled.fieldset.attrs(
     ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {} }) => ({
         children: (
             <>
-                <legend>표시 옵션</legend>
+                <summary>표시 옵션</summary>
                 <div>
                     <label htmlFor="criteria-sort">정렬 기준: </label>
                     <select
@@ -145,6 +145,12 @@ const CriteriaPanel = styled.fieldset.attrs(
     })
 )`
     margin-bottom: 1rem;
+    border: 1px solid black;
+    padding: 1rem;
+
+    &[open] summary {
+        margin-bottom: 1rem;
+    }
 `;
 
 const AbstractStatView = styled.section.attrs(
