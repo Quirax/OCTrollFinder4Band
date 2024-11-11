@@ -153,6 +153,8 @@ export const StatView = ({ data }) => {
         return () => media.removeEventListener('change', onMatchChange);
     }, []);
 
+    const View = statViews[currentView].View;
+
     return (
         <>
             <Variables />
@@ -170,7 +172,7 @@ export const StatView = ({ data }) => {
                         </Item>
                     ))}
                 </StatList>
-                {statViews[currentView].View({ data })}
+                <View data={data} />
             </Main>
         </>
     );

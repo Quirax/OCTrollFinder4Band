@@ -27,7 +27,7 @@ export const ArticlePerUser = createStatView(
             },
         ],
     },
-    (data) =>
+    (data, criteria) =>
         Object.values(
             data.posts.reduce((acc, post) => {
                 if (!acc[post.author.user_no])
@@ -52,5 +52,11 @@ export const ArticlePerUser = createStatView(
 
                 return acc;
             }, {})
-        ).sort((a, b) => b.posts + b.comments - (a.posts + a.comments))
+        ).sort(
+            !criteria.sort || criteria.sort === 'name'
+                ? (a, b) => a.name.localeCompare(b.name)
+                : criteria.sort === 'total-value'
+                ? (a, b) => b.posts + b.comments - (a.posts + a.comments)
+                : (a, b) => b[criteria.sort] - a[criteria.sort]
+        )
 );

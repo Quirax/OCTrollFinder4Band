@@ -43,7 +43,7 @@ export const TotalReactsPerUser = createStatView(
             },
         ],
     },
-    (data) =>
+    (data, criteria) =>
         Object.values(
             data.posts.reduce((acc, post) => {
                 if (!acc[post.author.user_no])
@@ -56,5 +56,11 @@ export const TotalReactsPerUser = createStatView(
 
                 return acc;
             }, {})
-        ).sort((a, b) => b.reads + b.comments + b.emotions - (a.reads + a.comments + a.emotions))
+        ).sort(
+            !criteria.sort || criteria.sort === 'name'
+                ? (a, b) => a.name.localeCompare(b.name)
+                : criteria.sort === 'total-value'
+                ? (a, b) => b.reads + b.comments + b.emotions - (a.reads + a.comments + a.emotions)
+                : (a, b) => b[criteria.sort] - a[criteria.sort]
+        )
 );

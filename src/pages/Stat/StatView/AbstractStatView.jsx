@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { CartesianGrid, Legend, Line, Area, ComposedChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import styled from 'styled-components';
-import { createEnum } from '../../../modules/util';
+import { createEnum, makeId } from '../../../modules/util';
 
 /**
  * @enum {{Line, Area}} The type of series
@@ -32,26 +32,56 @@ export const SeriesType = createEnum('Line', 'Area');
 
 /**
  * @param {Series[]} series
+ * @param {string} first
  */
-const SeriesView = (series = []) =>
-    series.map(({ type, name, key, stroke, fill, stackId } = {}, idx) => {
-        switch (type) {
-            case 'Line':
-                return <Line key={`series-${idx}`} type="monotone" dataKey={key} {...{ name, stroke }} />;
-            case 'Area':
-                return (
-                    <Area key={`series-${idx}`} type="monotone" dataKey={key} {...{ name, stroke, fill, stackId }} />
-                );
-        }
-    });
+const SeriesView = (series = [], first) =>
+    series
+        .map((v, i) => ({ ...v, idx: v.key === first ? -1 : i }))
+        .sort((a, b) => a.idx - b.idx)
+        .map(({ type, name, key, stroke, fill, stackId } = {}, idx) => {
+            switch (type) {
+                case 'Line':
+                    return <Line key={makeId(10)} type="monotone" dataKey={key} {...{ name, stroke }} />;
+                case 'Area':
+                    return <Area key={makeId(10)} type="monotone" dataKey={key} {...{ name, stroke, fill, stackId }} />;
+            }
+        });
 
-const CriteriaPanel = styled.fieldset.attrs(({}) => ({
-    children: (
-        <>
-            <legend>표시 옵션</legend>
-        </>
-    ),
-}))`
+/**
+ * @typedef Criteria
+ * @property {string} sort
+ */
+
+const CriteriaPanel = styled.fieldset.attrs(
+    /**
+     * @param {object} attrs
+     * @param {ChartOptions} attrs.$chartOptions The options of chart shown in the stat view
+     * @param {Criteria} attrs.$criteria The criteria object that controls view
+     * @param {React.Dispatch<React.SetStateAction<Criteria>>} attrs.$setCriteria The setter of criteria object
+     * @returns {import('styled-components').Attrs}
+     */
+    ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {} }) => ({
+        children: (
+            <>
+                <legend>표시 옵션</legend>
+                <label htmlFor="criteria-sort">정렬 기준: </label>
+                <select
+                    id="criteria-sort"
+                    value={$criteria.sort}
+                    onChange={(e) => $setCriteria({ ...$criteria, sort: e.target.value })}
+                >
+                    <option value="name">이름</option>
+                    <option value="total-value">총합</option>
+                    {$chartOptions.series.map(({ name, key }, idx) => (
+                        <option key={`criteria-sort-${idx}`} value={key}>
+                            {name}
+                        </option>
+                    ))}
+                </select>
+            </>
+        ),
+    })
+)`
     margin-bottom: 1rem;
 `;
 
@@ -62,14 +92,16 @@ const AbstractStatView = styled.section.attrs(
      * @param {string} attrs.$description The description of the stat view
      * @param {ChartData} attrs.$chartData The data of chart shown in the stat view
      * @param {ChartOptions} attrs.$chartOptions The options of chart shown in the stat view
+     * @param {Criteria} attrs.$criteria The criteria object that controls view
+     * @param {React.Dispatch<React.SetStateAction<Criteria>>} attrs.$setCriteria The setter of criteria object
      * @returns {import('styled-components').Attrs}
      */
-    ({ $title, $description, $chartData = [], $chartOptions = {} }) => ({
+    ({ $title, $description, $chartData = [], $chartOptions = {}, $criteria = {}, $setCriteria = () => {} }) => ({
         children: (
             <>
                 <h2>{$title}</h2>
                 <p>{$description}</p>
-                <CriteriaPanel />
+                <CriteriaPanel $chartOptions={$chartOptions} $criteria={$criteria} $setCriteria={$setCriteria} />
                 <div className="graph">
                     <ResponsiveContainer
                         width="100%"
@@ -90,7 +122,7 @@ const AbstractStatView = styled.section.attrs(
                                 <YAxis />
                                 <Tooltip />
                                 <Legend verticalAlign="top" />
-                                {SeriesView($chartOptions.series)}
+                                {SeriesView($chartOptions.series, $criteria.sort)}
                             </ComposedChart>
                         }
                     />
@@ -124,19 +156,26 @@ const AbstractStatView = styled.section.attrs(
  * @param {string} title The title of the stat view
  * @param {string} description The description of the stat view
  * @param {ChartOptions} chartOptions The options of chart shown in the stat view
- * @param {(data: object) => ChartData} chartDataGenerator A generator of chart data from input data
+ * @param {(data: object, criteria: Criteria) => ChartData} chartDataGenerator A generator of chart data from input data
  * @returns {StatView} The object describes the stat view
  */
 export const createStatView = (title, description, chartOptions = {}, chartDataGenerator = (data) => data) => ({
     title,
     description,
     View: ({ data }) => {
+        /**
+         * @type [Criteria, React.Dispatch<React.SetStateAction<Criteria>>]
+         */
+        const [criteria, setCriteria] = useState(() => ({ sort: 'name' }));
+
         return (
             <AbstractStatView
                 $title={title}
                 $description={description}
-                $chartData={chartDataGenerator(data)}
+                $chartData={chartDataGenerator(data, criteria)}
                 $chartOptions={chartOptions}
+                $criteria={criteria}
+                $setCriteria={setCriteria}
             />
         );
     },
