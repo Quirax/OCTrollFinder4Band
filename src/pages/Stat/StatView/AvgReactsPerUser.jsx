@@ -5,7 +5,7 @@ import { createStatView, SeriesType } from './AbstractStatView';
  */
 export const AvgReactsPerUser = createStatView(
     '사용자당 받은 평균 반응 수',
-    '각 사용자가 작성한 게시물의 평균 조회수, 댓글 수 및 표정 수입니다. 총합의 내림차순으로 정렬됩니다.',
+    '각 사용자가 작성한 게시물의 통계 작성 시점의 평균 조회수, 댓글 수 및 표정 수입니다.',
     {
         extendXAxis: true,
         series: [

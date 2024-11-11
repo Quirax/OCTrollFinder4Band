@@ -5,7 +5,7 @@ import { createStatView, SeriesType } from './AbstractStatView';
  */
 export const ArticlePerUser = createStatView(
     '사용자당 게시물 및 댓글 개수',
-    '각 사용자가 작성한 게시물 및 댓글의 개수입니다. 총합의 내림차순으로 정렬됩니다.',
+    '각 사용자가 작성한 게시물 및 댓글의 개수입니다.',
     {
         extendXAxis: true,
         series: [
