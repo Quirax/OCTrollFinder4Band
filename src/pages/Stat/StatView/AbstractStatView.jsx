@@ -45,6 +45,16 @@ const SeriesView = (series = []) =>
         }
     });
 
+const CriteriaPanel = styled.fieldset.attrs(({}) => ({
+    children: (
+        <>
+            <legend>표시 옵션</legend>
+        </>
+    ),
+}))`
+    margin-bottom: 1rem;
+`;
+
 const AbstractStatView = styled.section.attrs(
     /**
      * @param {object} attrs
@@ -59,6 +69,7 @@ const AbstractStatView = styled.section.attrs(
             <>
                 <h2>{$title}</h2>
                 <p>{$description}</p>
+                <CriteriaPanel />
                 <div className="graph">
                     <ResponsiveContainer
                         width="100%"
@@ -119,12 +130,14 @@ const AbstractStatView = styled.section.attrs(
 export const createStatView = (title, description, chartOptions = {}, chartDataGenerator = (data) => data) => ({
     title,
     description,
-    View: ({ data }) => (
-        <AbstractStatView
-            $title={title}
-            $description={description}
-            $chartData={chartDataGenerator(data)}
-            $chartOptions={chartOptions}
-        />
-    ),
+    View: ({ data }) => {
+        return (
+            <AbstractStatView
+                $title={title}
+                $description={description}
+                $chartData={chartDataGenerator(data)}
+                $chartOptions={chartOptions}
+            />
+        );
+    },
 });
