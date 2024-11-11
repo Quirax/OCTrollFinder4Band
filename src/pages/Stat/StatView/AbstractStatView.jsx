@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { CartesianGrid, Legend, Line, Area, ComposedChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import styled from 'styled-components';
 import { createEnum, makeId } from '../../../modules/util';
@@ -33,9 +33,11 @@ export const SeriesType = createEnum('Line', 'Area');
 /**
  * @param {Series[]} series
  * @param {string} first
+ * @param {object} show
  */
-const SeriesView = (series = [], first) =>
+const SeriesView = (series = [], first, show = {}) =>
     series
+        .filter((v) => show[v.key])
         .map((v, i) => ({ ...v, idx: v.key === first ? -1 : i }))
         .sort((a, b) => a.idx - b.idx)
         .map(({ type, name, key, stroke, fill, stackId } = {}, idx) => {
@@ -53,6 +55,7 @@ const SeriesView = (series = [], first) =>
  * @property {boolean} reverse
  * @property {Date} since
  * @property {Date} until
+ * @property {object} show
  */
 
 // ref: https://velog.io/@rkio/Javascript-YYYY-MM-DD-%ED%98%95%ED%83%9C%EC%9D%98-%EB%82%A0%EC%A7%9C-%EC%A0%95%EB%B3%B4%EB%A5%BC-%EB%A7%8C%EB%93%A4%EC%96%B4%EB%B3%B4%EC%9E%90
@@ -119,6 +122,24 @@ const CriteriaPanel = styled.fieldset.attrs(
                         onChange={(e) => $setCriteria({ ...$criteria, until: new Date(e.target.value).truncTime() })}
                     />
                 </div>
+                <div>
+                    표시할 항목:{' '}
+                    {$chartOptions.series.map(({ name, key }, idx) => (
+                        <Fragment key={`criteria-show-${key}`}>
+                            <input
+                                type="checkbox"
+                                id={`criteria-show-${key}`}
+                                checked={$criteria.show[key]}
+                                onChange={(e) => {
+                                    let show = $criteria.show;
+                                    show[key] = e.target.checked;
+                                    $setCriteria({ ...$criteria, show });
+                                }}
+                            />
+                            <label htmlFor={`criteria-show-${key}`}>{name}</label>{' '}
+                        </Fragment>
+                    ))}
+                </div>
             </>
         ),
     })
@@ -163,7 +184,7 @@ const AbstractStatView = styled.section.attrs(
                                 <YAxis />
                                 <Tooltip />
                                 <Legend verticalAlign="top" />
-                                {SeriesView($chartOptions.series, $criteria.sort)}
+                                {SeriesView($chartOptions.series, $criteria.sort, $criteria.show)}
                             </ComposedChart>
                         }
                     />
@@ -221,6 +242,7 @@ export const createStatView = (title, description, chartOptions = {}, chartDataG
             reverse: false,
             since: sinceToDate(data.bandInfo.since),
             until: new Date(Math.max(...Object.values(data.bandInfo.updated_at_status))),
+            show: Object.fromEntries(chartOptions.series.map((series) => [series.key, true])),
         }));
 
         console.log(criteria);
