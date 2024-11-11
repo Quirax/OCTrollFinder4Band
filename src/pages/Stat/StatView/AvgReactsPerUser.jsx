@@ -66,9 +66,11 @@ export const AvgReactsPerUser = createStatView(
             }))
             .sort(
                 !criteria.sort || criteria.sort === 'name'
-                    ? (a, b) => a.name.localeCompare(b.name)
+                    ? (a, b) => a.name.localeCompare(b.name) * (criteria.reverse ? -1 : 1)
                     : criteria.sort === 'total-value'
-                    ? (a, b) => b.reads + b.comments + b.emotions - (a.reads + a.comments + a.emotions)
-                    : (a, b) => b[criteria.sort] - a[criteria.sort]
+                    ? (a, b) =>
+                          (b.reads + b.comments + b.emotions - (a.reads + a.comments + a.emotions)) *
+                          (criteria.reverse ? -1 : 1)
+                    : (a, b) => (b[criteria.sort] - a[criteria.sort]) * (criteria.reverse ? -1 : 1)
             )
 );

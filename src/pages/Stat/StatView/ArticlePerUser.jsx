@@ -54,9 +54,9 @@ export const ArticlePerUser = createStatView(
             }, {})
         ).sort(
             !criteria.sort || criteria.sort === 'name'
-                ? (a, b) => a.name.localeCompare(b.name)
+                ? (a, b) => a.name.localeCompare(b.name) * (criteria.reverse ? -1 : 1)
                 : criteria.sort === 'total-value'
-                ? (a, b) => b.posts + b.comments - (a.posts + a.comments)
-                : (a, b) => b[criteria.sort] - a[criteria.sort]
+                ? (a, b) => (b.posts + b.comments - (a.posts + a.comments)) * (criteria.reverse ? -1 : 1)
+                : (a, b) => (b[criteria.sort] - a[criteria.sort]) * (criteria.reverse ? -1 : 1)
         )
 );

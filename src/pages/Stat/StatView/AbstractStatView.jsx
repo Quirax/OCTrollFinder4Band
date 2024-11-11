@@ -64,20 +64,29 @@ const CriteriaPanel = styled.fieldset.attrs(
         children: (
             <>
                 <legend>표시 옵션</legend>
-                <label htmlFor="criteria-sort">정렬 기준: </label>
-                <select
-                    id="criteria-sort"
-                    value={$criteria.sort}
-                    onChange={(e) => $setCriteria({ ...$criteria, sort: e.target.value })}
-                >
-                    <option value="name">이름</option>
-                    <option value="total-value">총합</option>
-                    {$chartOptions.series.map(({ name, key }, idx) => (
-                        <option key={`criteria-sort-${idx}`} value={key}>
-                            {name}
-                        </option>
-                    ))}
-                </select>
+                <div>
+                    <label htmlFor="criteria-sort">정렬 기준: </label>
+                    <select
+                        id="criteria-sort"
+                        value={$criteria.sort}
+                        onChange={(e) => $setCriteria({ ...$criteria, sort: e.target.value })}
+                    >
+                        <option value="name">이름</option>
+                        <option value="total-value">총합</option>
+                        {$chartOptions.series.map(({ name, key }, idx) => (
+                            <option key={`criteria-sort-${idx}`} value={key}>
+                                {name}
+                            </option>
+                        ))}
+                    </select>
+                    <input
+                        type="checkbox"
+                        id="criteria-reverse"
+                        checked={$criteria.reverse}
+                        onChange={(e) => $setCriteria({ ...$criteria, reverse: e.target.checked })}
+                    />
+                    <label htmlFor="criteria-reverse">역순</label>
+                </div>
             </>
         ),
     })
@@ -166,7 +175,7 @@ export const createStatView = (title, description, chartOptions = {}, chartDataG
         /**
          * @type [Criteria, React.Dispatch<React.SetStateAction<Criteria>>]
          */
-        const [criteria, setCriteria] = useState(() => ({ sort: 'name' }));
+        const [criteria, setCriteria] = useState(() => ({ sort: 'name', reverse: false }));
 
         return (
             <AbstractStatView
