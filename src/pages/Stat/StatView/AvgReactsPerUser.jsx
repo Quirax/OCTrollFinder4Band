@@ -46,6 +46,8 @@ export const AvgReactsPerUser = createStatView(
     (data, criteria) =>
         Object.values(
             data.posts.reduce((acc, post) => {
+                if (!new Date(post.created_at).isBetween(criteria.since, criteria.until)) return acc;
+
                 if (!acc[post.author.user_no])
                     acc[post.author.user_no] = { name: post.author.name, posts: 0, reads: 0, comments: 0, emotions: 0 };
 

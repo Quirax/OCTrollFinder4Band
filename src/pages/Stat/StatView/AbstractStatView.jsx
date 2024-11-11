@@ -50,7 +50,17 @@ const SeriesView = (series = [], first) =>
 /**
  * @typedef Criteria
  * @property {string} sort
+ * @property {boolean} reverse
+ * @property {Date} since
+ * @property {Date} until
  */
+
+// ref: https://velog.io/@rkio/Javascript-YYYY-MM-DD-%ED%98%95%ED%83%9C%EC%9D%98-%EB%82%A0%EC%A7%9C-%EC%A0%95%EB%B3%B4%EB%A5%BC-%EB%A7%8C%EB%93%A4%EC%96%B4%EB%B3%B4%EC%9E%90
+const formatDate = (date) =>
+    `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date
+        .getDate()
+        .toString()
+        .padStart(2, '0')}`;
 
 const CriteriaPanel = styled.fieldset.attrs(
     /**
@@ -86,6 +96,28 @@ const CriteriaPanel = styled.fieldset.attrs(
                         onChange={(e) => $setCriteria({ ...$criteria, reverse: e.target.checked })}
                     />
                     <label htmlFor="criteria-reverse">역순</label>
+                </div>
+                <div>
+                    기간:{' '}
+                    <input
+                        type="date"
+                        value={formatDate($criteria.since)}
+                        onChange={(e) => {
+                            let since = new Date(e.target.value).truncTime();
+                            $setCriteria({
+                                ...$criteria,
+                                since,
+                                until: new Date(Math.max(since, $criteria.until)).truncTime(),
+                            });
+                        }}
+                    />{' '}
+                    ~{' '}
+                    <input
+                        type="date"
+                        min={formatDate($criteria.since)}
+                        value={formatDate($criteria.until)}
+                        onChange={(e) => $setCriteria({ ...$criteria, until: new Date(e.target.value).truncTime() })}
+                    />
                 </div>
             </>
         ),
@@ -154,6 +186,15 @@ const AbstractStatView = styled.section.attrs(
     }
 `;
 
+// ref: https://java119.tistory.com/76
+const sinceToDate = (since) => {
+    let ymd = String(since);
+    let y = ymd.substring(0, 4),
+        m = ymd.substring(4, 6),
+        d = ymd.substring(6, 8);
+    return new Date(Number(y), Number(m) - 1, Number(d));
+};
+
 /**
  * @typedef StatView
  * @property {string} title The title of the stat view
@@ -175,7 +216,14 @@ export const createStatView = (title, description, chartOptions = {}, chartDataG
         /**
          * @type [Criteria, React.Dispatch<React.SetStateAction<Criteria>>]
          */
-        const [criteria, setCriteria] = useState(() => ({ sort: 'name', reverse: false }));
+        const [criteria, setCriteria] = useState(() => ({
+            sort: 'name',
+            reverse: false,
+            since: sinceToDate(data.bandInfo.since),
+            until: new Date(Math.max(...Object.values(data.bandInfo.updated_at_status))),
+        }));
+
+        console.log(criteria);
 
         return (
             <AbstractStatView
