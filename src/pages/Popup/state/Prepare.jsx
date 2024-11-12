@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { DateConstraints } from '../Criteria';
 import { State } from '.';
 import { styled } from 'styled-components';
 import { BottomButton } from '../common';
@@ -29,34 +28,6 @@ const BandInfo = styled.div`
     }
 `;
 
-const CriteriaContainer = styled.details`
-    margin-bottom: 1em;
-
-    summary {
-        &::marker {
-            display: none;
-            content: '';
-        }
-
-        &::before {
-            content: '▶';
-            margin-right: 0.25em;
-        }
-
-        &::after {
-            content: '◀';
-            margin-left: 0.25em;
-        }
-    }
-
-    &[open] summary {
-        &::before,
-        &::after {
-            content: '▼';
-        }
-    }
-`;
-
 // ref: https://java119.tistory.com/76
 const sinceToDate = (since) => {
     let ymd = String(since);
@@ -67,8 +38,6 @@ const sinceToDate = (since) => {
 };
 
 export const Prepare = ({ transition }) => {
-    /** @type {import('../Popup').CriteriaRegistry[]} */
-    const registry = [];
     const [bandInfo, setBandInfo] = useState({});
 
     useMessenger((messenger) => {
@@ -84,8 +53,7 @@ export const Prepare = ({ transition }) => {
     }, []);
 
     const onStart = () => {
-        let criteria = registry.map((v) => v.get()).filter((v) => v);
-        transition(State.Processing, { criteria, bandInfo });
+        transition(State.Processing, { bandInfo });
     };
 
     if (Object.entries(bandInfo).length === 0) return <></>;
@@ -96,14 +64,6 @@ export const Prepare = ({ transition }) => {
                 <img src={bandInfo.cover} />
                 <h2>{bandInfo.name}</h2>
             </BandInfo>
-            <CriteriaContainer>
-                <summary>세부 조건</summary>
-                <DateConstraints
-                    criteriaRegistry={registry}
-                    defaultStart={sinceToDate(bandInfo.since)}
-                    defaultEnd={new Date(bandInfo.updated_at_status.post)}
-                />
-            </CriteriaContainer>
             <BottomButton onClick={onStart}>현재 밴드 분석하기</BottomButton>
         </>
     );
