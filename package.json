@@ -1,6 +1,6 @@
 {
     "name": "OCTrollFinder4Band",
-    "version": "1.0.0",
+    "version": "1.0.0-alpha",
     "description": "A chrome extension to find trolls in OC community on Band",
     "license": "MIT",
     "repository": {
@@ -8,7 +8,7 @@
         "url": "https://github.com/Quirax/OCTrollFinder4Band.git"
     },
     "scripts": {
-        "build": "node utils/build.js",
+        "build": "cross-env NODE_ENV=production node utils/build.js",
         "start": "node utils/webserver.js",
         "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
     },
@@ -39,6 +39,7 @@
         "babel-preset-react-app": "^10.0.1",
         "clean-webpack-plugin": "^4.0.0",
         "copy-webpack-plugin": "^11.0.0",
+        "cross-env": "^7.0.3",
         "css-loader": "^6.7.3",
         "eslint": "^8.31.0",
         "eslint-config-react-app": "^7.0.1",
