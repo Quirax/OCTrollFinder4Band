@@ -2,6 +2,8 @@
 
 Original Character Community Troll Finder for Band (OCTrollFinder4Band)
 
+커뮤 내 게시물과 반응 데이터를 분석하여 특정 자캐의 편파 여부를 진단하고, 공정한 운영을 돕는 도구입니다.
+
 ## 실행 화면
 
 아래 환경에서 [실행 방법](#실행-방법) 문단의 설명에 따라 실행한 화면입니다.
