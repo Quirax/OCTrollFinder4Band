@@ -10,7 +10,14 @@ const LogoImg = styled.img.attrs(() => ({ src: logo }))`
     width: 100px;
 `;
 
-const Title = styled.h1.attrs(() => ({ children: 'OCTrollFinder4Band' }))``;
+const Title = styled.h1.attrs(() => ({
+    children:
+        chrome.i18n
+            .getMessage('extension_display')
+            .split('\n')
+            .flatMap((v, i) => [v, <br key={i} />])
+            .slice(0, -1) || 'OCTrollFinder4Band',
+}))``;
 
 /**
  * @typedef CriteriaRegistry

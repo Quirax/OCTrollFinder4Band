@@ -2,6 +2,9 @@
     "extension_name": {
         "message": "Original Character Community Troll Finder for Band"
     },
+    "extension_display": {
+        "message": "Original Character\nCommunity Troll Finder\nfor Band"
+    },
     "extension_description": {
         "message": "A chrome extension to find trolls in OC community on Band"
     }
