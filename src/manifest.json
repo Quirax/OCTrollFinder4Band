@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "OCTrollFinder4Band",
-    "description": "A chrome extension to find trolls in OC community on Band",
+    "name": "__MSG_extension_name__",
+    "description": "__MSG_extension_description__",
     "options_page": "options.html",
     "background": { "service_worker": "background.bundle.js" },
     "action": {
@@ -30,5 +30,6 @@
         }
     ],
     "permissions": ["scripting", "tabs", "storage", "unlimitedStorage", "alarms"],
-    "host_permissions": ["*://band.us/*"]
+    "host_permissions": ["*://band.us/*"],
+    "default_locale": "ko"
 }
