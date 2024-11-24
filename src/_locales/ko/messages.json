@@ -1,0 +1,11 @@
+{
+    "extension_name": {
+        "message": "밴드를 위한 자캐 커뮤니티 편파 탐색기"
+    },
+    "extension_display": {
+        "message": "밴드를 위한\n자캐 커뮤니티\n편파 탐색기"
+    },
+    "extension_description": {
+        "message": "커뮤 내 게시물과 반응 데이터를 분석하여 특정 자캐의 편파 여부를 진단하는 도구"
+    }
+}
