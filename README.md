@@ -104,3 +104,7 @@ Original Character Community Troll Finder for Band (OCTrollFinder4Band)
 이 외에도 프로젝트에 직&middot;간접적으로 도움을 주신 모든 분들께 감사드립니다.
 
 필요한 통계나 기능에 대한 아이디어는 언제든 환영합니다. Issues 탭을 통해 제안해주시면 감사하겠습니다.
+
+## 개인정보처리방침
+
+이 확장 프로그램의 개인정보처리방침은 [docs/privacy-policy.md](./docs/privacy-policy.md)를 참조하시기 바랍니다.
