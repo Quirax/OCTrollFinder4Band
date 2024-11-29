@@ -56,6 +56,7 @@ Stat 페이지에서는 [전달받은 데이터를 local 확장 프로그램 sto
     -   [chrome.storage](https://developer.chrome.com/docs/확장 프로그램s/reference/api/storage) by Google
     -   [chrome.alarms](https://developer.chrome.com/docs/확장 프로그램s/reference/api/alarms) by Google
     -   [chrome.tabs](https://developer.chrome.com/docs/확장 프로그램s/reference/api/tabs) by Google
+    -   [Localization message formats](https://developer.chrome.com/docs/extensions/how-to/ui/localization-message-formats) by Google
     -   [Access window variable from Content Script](https://stackoverflow.com/questions/20499994)
     -   [Using `window` globals in ManifestV3 service worker background script](https://stackoverflow.com/questions/73778202)
     -   [[해결된 문제] Chrome 확장 프로그램 service worker inactive](https://my-chair.tistory.com/6) by [개발자의 의자](https://my-chair.tistory.com/)
