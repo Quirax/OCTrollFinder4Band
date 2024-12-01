@@ -144,28 +144,26 @@ const CriteriaPanel = styled.details.attrs(
                         </Fragment>
                     ))}
                 </div>
-                <div>
-                    <div>
-                        표시할 사용자:{' '}
-                        <Tokenizer
-                            options={$userList}
-                            placeholder="사용자를 선택하세요."
-                            displayOption="name"
-                            filterOption="name"
-                            onTokenAdd={(token) => {
-                                let userlist = $criteria.userlist;
-                                userlist.push(token.userNo);
-                                $setCriteria({ ...$criteria, userlist });
-                            }}
-                            onTokenRemove={(token) => {
-                                let userlist = $criteria.userlist;
-                                let idx = userlist.findIndex((v) => v === token.userNo);
-                                if (idx > -1) userlist.splice(idx, 1);
-                                $setCriteria({ ...$criteria, userlist });
-                            }}
-                            defaultClassNames={true}
-                        />
-                    </div>
+                <fieldset>
+                    <legend>표시할 사용자</legend>
+                    <Tokenizer
+                        options={$userList}
+                        placeholder="사용자를 선택하세요."
+                        displayOption="name"
+                        filterOption="name"
+                        onTokenAdd={(token) => {
+                            let userlist = $criteria.userlist;
+                            userlist.push(token.userNo);
+                            $setCriteria({ ...$criteria, userlist });
+                        }}
+                        onTokenRemove={(token) => {
+                            let userlist = $criteria.userlist;
+                            let idx = userlist.findIndex((v) => v === token.userNo);
+                            if (idx > -1) userlist.splice(idx, 1);
+                            $setCriteria({ ...$criteria, userlist });
+                        }}
+                        defaultClassNames={true}
+                    />
                     <div>
                         <input
                             type="radio"
@@ -184,7 +182,7 @@ const CriteriaPanel = styled.details.attrs(
                         />
                         <label htmlFor="criteria-user-exclude">선택한 사용자들을 제외하고 표시</label>
                     </div>
-                </div>
+                </fieldset>
             </>
         ),
     })
@@ -197,9 +195,55 @@ const CriteriaPanel = styled.details.attrs(
         margin-bottom: 1rem;
     }
 
-    div.typeahead-tokenizer,
-    div.typeahead {
-        display: inline-block;
+    div.typeahead-tokenizer {
+        div.typeahead-token {
+            border: 1px solid black;
+            padding: 0.5em;
+            display: inline-block;
+
+            &:not(:first-child) {
+                border-left: none;
+            }
+
+            a.typeahead-token-close {
+                margin-left: 0.5em;
+                text-decoration: none;
+                color: gray;
+            }
+        }
+
+        div.typeahead {
+            margin-top: 0.5rem;
+
+            input {
+                width: 100%;
+            }
+
+            ul.typeahead-selector {
+                position: absolute;
+                border: 1px solid black;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                z-index: 1;
+
+                li {
+                    padding: 1rem;
+                    border-bottom: 1px solid black;
+                    background: white;
+                    cursor: pointer;
+
+                    &:last-child {
+                        border-bottom: none;
+                    }
+
+                    a {
+                        text-decoration: none;
+                        color: black;
+                    }
+                }
+            }
+        }
     }
 `;
 
