@@ -46,7 +46,13 @@ export const TotalReactsPerUser = createStatView(
     (data, criteria) =>
         Object.values(
             data.posts.reduce((acc, post) => {
-                if (!new Date(post.created_at).isBetween(criteria.since, criteria.until)) return acc;
+                if (
+                    !new Date(post.created_at).isBetween(criteria.since, criteria.until) ||
+                    (criteria.userlist.length > 0 &&
+                        // If both conditions are all true or false (i.e. true and true, false and false)
+                        !!(criteria.isUserlistForExclude ^ (criteria.userlist.indexOf(post.author.name) === -1)))
+                )
+                    return acc;
 
                 if (!acc[post.author.user_no])
                     acc[post.author.user_no] = { name: post.author.name, reads: 0, comments: 0, emotions: 0, posts: 0 };
