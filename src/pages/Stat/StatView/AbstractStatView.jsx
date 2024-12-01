@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { CartesianGrid, Legend, Line, Area, ComposedChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import styled from 'styled-components';
 import { createEnum, makeId } from '../../../modules/util';
+import { Tokenizer } from 'react-typeahead';
 
 /**
  * @enum {{Line, Area}} The type of series
@@ -140,6 +141,28 @@ const CriteriaPanel = styled.details.attrs(
                         </Fragment>
                     ))}
                 </div>
+                <div>
+                    <div>
+                        표시할 사용자:{' '}
+                        <Tokenizer
+                            options={['뫄뫄', '솨솨']}
+                            placeholder="사용자를 선택하세요."
+                            onTokenAdd={(e) => {
+                                console.log(e, this);
+                            }}
+                            onTokenRemove={(e) => {
+                                console.log(e, this);
+                            }}
+                            defaultClassNames={true}
+                        />
+                    </div>
+                    <div>
+                        <input type="radio" id="criteria-user-bound" name="criteria-user" />
+                        <label htmlFor="criteria-user-bound">선택한 사용자들만 표시</label>
+                        <input type="radio" id="criteria-user-exclude" name="criteria-user" />
+                        <label htmlFor="criteria-user-exclude">선택한 사용자들을 제외하고 표시</label>
+                    </div>
+                </div>
             </>
         ),
     })
@@ -150,6 +173,11 @@ const CriteriaPanel = styled.details.attrs(
 
     &[open] summary {
         margin-bottom: 1rem;
+    }
+
+    div.typeahead-tokenizer,
+    div.typeahead {
+        display: inline-block;
     }
 `;
 
