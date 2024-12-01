@@ -147,7 +147,7 @@ const CriteriaPanel = styled.details.attrs(
                 <fieldset>
                     <legend>표시할 사용자</legend>
                     <Tokenizer
-                        options={$userList}
+                        options={$userList.filter(({ userNo }) => $criteria.userlist.indexOf(userNo) === -1)}
                         placeholder="사용자를 선택하세요."
                         displayOption="name"
                         filterOption="name"
@@ -162,7 +162,7 @@ const CriteriaPanel = styled.details.attrs(
                             if (idx > -1) userlist.splice(idx, 1);
                             $setCriteria({ ...$criteria, userlist });
                         }}
-                        defaultClassNames={true}
+                        showOptionsWhenEmpty={true}
                     />
                     <div>
                         <input
@@ -226,6 +226,8 @@ const CriteriaPanel = styled.details.attrs(
                 margin: 0;
                 padding: 0;
                 z-index: 1;
+                max-height: 15rem;
+                overflow-y: scroll;
 
                 li {
                     padding: 1rem;
