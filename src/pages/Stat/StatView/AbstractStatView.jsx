@@ -57,7 +57,7 @@ const SeriesView = (series = [], first, show = {}) =>
  * @property {Date} since
  * @property {Date} until
  * @property {object} show
- * @property {Array<string>} userlist
+ * @property {Array<number>} userlist
  * @property {boolean} isUserlistForExclude
  */
 
@@ -74,7 +74,7 @@ const CriteriaPanel = styled.details.attrs(
      * @param {ChartOptions} attrs.$chartOptions The options of chart shown in the stat view
      * @param {Criteria} attrs.$criteria The criteria object that controls view
      * @param {React.Dispatch<React.SetStateAction<Criteria>>} attrs.$setCriteria The setter of criteria object
-     * @param {Array<string>} attrs.$userList List of users shown in the view
+     * @param {Array<{ name: string, userNo: number }>} attrs.$userList List of users shown in the view
      * @returns {import('styled-components').Attrs}
      */
     ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {}, $userList = [] }) => ({
@@ -150,14 +150,16 @@ const CriteriaPanel = styled.details.attrs(
                         <Tokenizer
                             options={$userList}
                             placeholder="사용자를 선택하세요."
+                            displayOption="name"
+                            filterOption="name"
                             onTokenAdd={(token) => {
                                 let userlist = $criteria.userlist;
-                                userlist.push(token);
+                                userlist.push(token.userNo);
                                 $setCriteria({ ...$criteria, userlist });
                             }}
                             onTokenRemove={(token) => {
                                 let userlist = $criteria.userlist;
-                                let idx = userlist.findIndex((v) => v === token);
+                                let idx = userlist.findIndex((v) => v === token.userNo);
                                 if (idx > -1) userlist.splice(idx, 1);
                                 $setCriteria({ ...$criteria, userlist });
                             }}
@@ -210,7 +212,7 @@ const AbstractStatView = styled.section.attrs(
      * @param {ChartOptions} attrs.$chartOptions The options of chart shown in the stat view
      * @param {Criteria} attrs.$criteria The criteria object that controls view
      * @param {React.Dispatch<React.SetStateAction<Criteria>>} attrs.$setCriteria The setter of criteria object
-     * @param {Array<string>} attrs.$userList List of users shown in the view
+     * @param {Array<{ name: string, userNo: number }>} attrs.$userList List of users shown in the view
      * @returns {import('styled-components').Attrs}
      */
     ({
@@ -317,14 +319,35 @@ export const createStatView = (title, description, chartOptions = {}, chartDataG
 
         console.log(criteria);
 
-        const chartData = chartDataGenerator(data, criteria);
+        const userList = Object.values(
+            data.posts.reduce((acc, post) => {
+                if (!acc[post.author.user_no])
+                    acc[post.author.user_no] = { name: post.author.name, userNo: post.author.user_no };
+
+                post.comments.reduce((acc, comment) => {
+                    if (!acc[comment.author.user_no])
+                        acc[comment.author.user_no] = { name: comment.author.name, userNo: comment.author.user_no };
+
+                    comment.comments.reduce((acc, comment) => {
+                        if (!acc[comment.author.user_no])
+                            acc[comment.author.user_no] = { name: comment.author.name, userNo: comment.author.user_no };
+
+                        return acc;
+                    }, acc);
+
+                    return acc;
+                }, acc);
+
+                return acc;
+            }, {})
+        );
 
         return (
             <AbstractStatView
                 $title={title}
                 $description={description}
-                $chartData={chartData}
-                $userList={chartData.map((v) => v.name)}
+                $chartData={chartDataGenerator(data, criteria)}
+                $userList={userList}
                 $chartOptions={chartOptions}
                 $criteria={criteria}
                 $setCriteria={setCriteria}

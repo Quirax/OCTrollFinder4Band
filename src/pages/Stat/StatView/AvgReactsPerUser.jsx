@@ -50,7 +50,7 @@ export const AvgReactsPerUser = createStatView(
                     !new Date(post.created_at).isBetween(criteria.since, criteria.until) ||
                     (criteria.userlist.length > 0 &&
                         // If both conditions are all true or false (i.e. true and true, false and false)
-                        !!(criteria.isUserlistForExclude ^ (criteria.userlist.indexOf(post.author.name) === -1)))
+                        !!(criteria.isUserlistForExclude ^ (criteria.userlist.indexOf(post.author.user_no) === -1)))
                 )
                     return acc;
 
