@@ -57,6 +57,8 @@ const SeriesView = (series = [], first, show = {}) =>
  * @property {Date} since
  * @property {Date} until
  * @property {object} show
+ * @property {Array<string>} userlist
+ * @property {boolean} isUserlistForExclude
  */
 
 // ref: https://velog.io/@rkio/Javascript-YYYY-MM-DD-%ED%98%95%ED%83%9C%EC%9D%98-%EB%82%A0%EC%A7%9C-%EC%A0%95%EB%B3%B4%EB%A5%BC-%EB%A7%8C%EB%93%A4%EC%96%B4%EB%B3%B4%EC%9E%90
@@ -72,9 +74,10 @@ const CriteriaPanel = styled.details.attrs(
      * @param {ChartOptions} attrs.$chartOptions The options of chart shown in the stat view
      * @param {Criteria} attrs.$criteria The criteria object that controls view
      * @param {React.Dispatch<React.SetStateAction<Criteria>>} attrs.$setCriteria The setter of criteria object
+     * @param {Array<string>} attrs.$userList List of users shown in the view
      * @returns {import('styled-components').Attrs}
      */
-    ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {} }) => ({
+    ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {}, $userList = [] }) => ({
         children: (
             <>
                 <summary>표시 옵션</summary>
@@ -145,21 +148,38 @@ const CriteriaPanel = styled.details.attrs(
                     <div>
                         표시할 사용자:{' '}
                         <Tokenizer
-                            options={['뫄뫄', '솨솨']}
+                            options={$userList}
                             placeholder="사용자를 선택하세요."
-                            onTokenAdd={(e) => {
-                                console.log(e, this);
+                            onTokenAdd={(token) => {
+                                let userlist = $criteria.userlist;
+                                userlist.push(token);
+                                $setCriteria({ ...$criteria, userlist });
                             }}
-                            onTokenRemove={(e) => {
-                                console.log(e, this);
+                            onTokenRemove={(token) => {
+                                let userlist = $criteria.userlist;
+                                let idx = userlist.findIndex((v) => v === token);
+                                if (idx > -1) userlist.splice(idx, 1);
+                                $setCriteria({ ...$criteria, userlist });
                             }}
                             defaultClassNames={true}
                         />
                     </div>
                     <div>
-                        <input type="radio" id="criteria-user-bound" name="criteria-user" />
+                        <input
+                            type="radio"
+                            id="criteria-user-bound"
+                            name="criteria-user"
+                            checked={!$criteria.isUserlistForExclude}
+                            onChange={(e) => $setCriteria({ ...$criteria, isUserlistForExclude: !e.target.checked })}
+                        />
                         <label htmlFor="criteria-user-bound">선택한 사용자들만 표시</label>
-                        <input type="radio" id="criteria-user-exclude" name="criteria-user" />
+                        <input
+                            type="radio"
+                            id="criteria-user-exclude"
+                            name="criteria-user"
+                            checked={$criteria.isUserlistForExclude}
+                            onChange={(e) => $setCriteria({ ...$criteria, isUserlistForExclude: e.target.checked })}
+                        />
                         <label htmlFor="criteria-user-exclude">선택한 사용자들을 제외하고 표시</label>
                     </div>
                 </div>
@@ -190,14 +210,28 @@ const AbstractStatView = styled.section.attrs(
      * @param {ChartOptions} attrs.$chartOptions The options of chart shown in the stat view
      * @param {Criteria} attrs.$criteria The criteria object that controls view
      * @param {React.Dispatch<React.SetStateAction<Criteria>>} attrs.$setCriteria The setter of criteria object
+     * @param {Array<string>} attrs.$userList List of users shown in the view
      * @returns {import('styled-components').Attrs}
      */
-    ({ $title, $description, $chartData = [], $chartOptions = {}, $criteria = {}, $setCriteria = () => {} }) => ({
+    ({
+        $title,
+        $description,
+        $chartData = [],
+        $chartOptions = {},
+        $criteria = {},
+        $setCriteria = () => {},
+        $userList = [],
+    }) => ({
         children: (
             <>
                 <h2>{$title}</h2>
                 <p>{$description}</p>
-                <CriteriaPanel $chartOptions={$chartOptions} $criteria={$criteria} $setCriteria={$setCriteria} />
+                <CriteriaPanel
+                    $chartOptions={$chartOptions}
+                    $criteria={$criteria}
+                    $setCriteria={$setCriteria}
+                    $userList={$userList}
+                />
                 <div className="graph">
                     <ResponsiveContainer
                         width="100%"
@@ -277,15 +311,20 @@ export const createStatView = (title, description, chartOptions = {}, chartDataG
             since: sinceToDate(data.bandInfo.since),
             until: new Date(Math.max(...Object.values(data.bandInfo.updated_at_status))),
             show: Object.fromEntries(chartOptions.series.map((series) => [series.key, true])),
+            userlist: [],
+            isUserlistForExclude: false,
         }));
 
         console.log(criteria);
+
+        const chartData = chartDataGenerator(data, criteria);
 
         return (
             <AbstractStatView
                 $title={title}
                 $description={description}
-                $chartData={chartDataGenerator(data, criteria)}
+                $chartData={chartData}
+                $userList={chartData.map((v) => v.name)}
                 $chartOptions={chartOptions}
                 $criteria={criteria}
                 $setCriteria={setCriteria}
