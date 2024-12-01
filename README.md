@@ -19,9 +19,7 @@ Original Character Community Troll Finder for Band (OCTrollFinder4Band)
 
 ### Web Store에서 설치
 
-(게시 준비중: 2024년 12월까지 게시 예정)
-
-<!-- - Chrome: [Chrome Web Store]()에 접속한 뒤, `Chrome에 추가` 버튼을 클릭하여 설치를 진행합니다. -->
+-   Chrome: [Chrome Web Store](https://chromewebstore.google.com/detail/djkoblkifcbolejdhilafnnhblnbibid)에 접속한 뒤, `Chrome에 추가` 버튼을 클릭하여 설치를 진행합니다.
 <!-- - Firefox: [Firefox Add-ons]()에 접속한 뒤, `Firefox에 추가` 버튼을 클릭하여 설치를 진행합니다. -->
 
 ### Releases에서 설치
@@ -36,7 +34,7 @@ Original Character Community Troll Finder for Band (OCTrollFinder4Band)
 ### 분석 진행 과정
 
 1. 분석을 진행할 밴드 페이지를 엽니다.
-2. ![2단계](./docs/images/2nd-step.png)<br>밴드 페이지 탭을 표시하는 상태에서 확장 프로그램을 실행합니다. 창 우측 상단 '확장 프로그램' 아이콘을 클릭한 뒤, 표시되는 목록에서 `OCTrollFinder4Band`를 클릭하면 됩니다.
+2. ![2단계](./docs/images/2nd-step.png)<br>밴드 페이지 탭을 표시하는 상태에서 확장 프로그램을 실행합니다. 창 우측 상단 '확장 프로그램' 아이콘을 클릭한 뒤, 표시되는 목록에서 `밴드를 위한 자캐 커뮤니티 편파 탐색기`를 클릭하면 됩니다.
 3. ![3단계](./docs/images/3rd-step.png)<br>표시된 팝업 화면에서 `현재 밴드 분석하기` 버튼을 클릭합니다.
 4. ![4단계](./docs/images/4th-step.png)<br>분석을 준비한 뒤 새 탭으로 분석 화면이 표시될 때까지 기다립니다.
 5. ![5단계](./docs/images/5th-step.png)<br>분석 화면 좌측의 통계 종류를 선택하여 원하는 통계 분석을 확인합니다.
