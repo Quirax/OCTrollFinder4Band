@@ -46,6 +46,7 @@ Stat 페이지에서는 [전달받은 데이터를 local 확장 프로그램 sto
 -   밴드 API 사용을 위한 dependencies: [jquery](https://www.npmjs.com/package/jquery) (v3.7.1), [moment](https://www.npmjs.com/package/moment) (v2.30.1), [moment-timezone](https://www.npmjs.com/package/moment-timezone) (v0.5.45), [underscore](https://www.npmjs.com/package/underscore) (v1.13.6)
 -   차트 표시: [recharts](https://www.npmjs.com/package/recharts) (v2.13.3)
 -   요소 스타일링: [styled-components](https://www.npmjs.com/package/styled-components) (v6.1.12)
+-   사용자 선택을 위한 typeahead(자동 완성) 모듈: [react-typeahead](https://www.npmjs.com/package/react-typeahead) (v2.0.0-alpha.8)
 
 ## 참고자료
 
