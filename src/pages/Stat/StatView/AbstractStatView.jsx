@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { CartesianGrid, Legend, Line, Area, ComposedChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import styled from 'styled-components';
 import { createEnum, makeId } from '../../../modules/util';
+import { Tokenizer } from 'react-typeahead';
 
 /**
  * @enum {{Line, Area}} The type of series
@@ -56,6 +57,8 @@ const SeriesView = (series = [], first, show = {}) =>
  * @property {Date} since
  * @property {Date} until
  * @property {object} show
+ * @property {Array<number>} userlist
+ * @property {boolean} isUserlistForExclude
  */
 
 // ref: https://velog.io/@rkio/Javascript-YYYY-MM-DD-%ED%98%95%ED%83%9C%EC%9D%98-%EB%82%A0%EC%A7%9C-%EC%A0%95%EB%B3%B4%EB%A5%BC-%EB%A7%8C%EB%93%A4%EC%96%B4%EB%B3%B4%EC%9E%90
@@ -71,9 +74,10 @@ const CriteriaPanel = styled.details.attrs(
      * @param {ChartOptions} attrs.$chartOptions The options of chart shown in the stat view
      * @param {Criteria} attrs.$criteria The criteria object that controls view
      * @param {React.Dispatch<React.SetStateAction<Criteria>>} attrs.$setCriteria The setter of criteria object
+     * @param {Array<{ name: string, userNo: number }>} attrs.$userList List of users shown in the view
      * @returns {import('styled-components').Attrs}
      */
-    ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {} }) => ({
+    ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {}, $userList = [] }) => ({
         children: (
             <>
                 <summary>표시 옵션</summary>
@@ -140,6 +144,45 @@ const CriteriaPanel = styled.details.attrs(
                         </Fragment>
                     ))}
                 </div>
+                <fieldset>
+                    <legend>표시할 사용자</legend>
+                    <Tokenizer
+                        options={$userList.filter(({ userNo }) => $criteria.userlist.indexOf(userNo) === -1)}
+                        placeholder="사용자를 선택하세요."
+                        displayOption="name"
+                        filterOption="name"
+                        onTokenAdd={(token) => {
+                            let userlist = $criteria.userlist;
+                            userlist.push(token.userNo);
+                            $setCriteria({ ...$criteria, userlist });
+                        }}
+                        onTokenRemove={(token) => {
+                            let userlist = $criteria.userlist;
+                            let idx = userlist.findIndex((v) => v === token.userNo);
+                            if (idx > -1) userlist.splice(idx, 1);
+                            $setCriteria({ ...$criteria, userlist });
+                        }}
+                        showOptionsWhenEmpty={true}
+                    />
+                    <div>
+                        <input
+                            type="radio"
+                            id="criteria-user-bound"
+                            name="criteria-user"
+                            checked={!$criteria.isUserlistForExclude}
+                            onChange={(e) => $setCriteria({ ...$criteria, isUserlistForExclude: !e.target.checked })}
+                        />
+                        <label htmlFor="criteria-user-bound">선택한 사용자들만 표시</label>
+                        <input
+                            type="radio"
+                            id="criteria-user-exclude"
+                            name="criteria-user"
+                            checked={$criteria.isUserlistForExclude}
+                            onChange={(e) => $setCriteria({ ...$criteria, isUserlistForExclude: e.target.checked })}
+                        />
+                        <label htmlFor="criteria-user-exclude">선택한 사용자들을 제외하고 표시</label>
+                    </div>
+                </fieldset>
             </>
         ),
     })
@@ -150,6 +193,59 @@ const CriteriaPanel = styled.details.attrs(
 
     &[open] summary {
         margin-bottom: 1rem;
+    }
+
+    div.typeahead-tokenizer {
+        div.typeahead-token {
+            border: 1px solid black;
+            padding: 0.5em;
+            display: inline-block;
+
+            &:not(:first-child) {
+                border-left: none;
+            }
+
+            a.typeahead-token-close {
+                margin-left: 0.5em;
+                text-decoration: none;
+                color: gray;
+            }
+        }
+
+        div.typeahead {
+            margin-top: 0.5rem;
+
+            input {
+                width: 100%;
+            }
+
+            ul.typeahead-selector {
+                position: absolute;
+                border: 1px solid black;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                z-index: 1;
+                max-height: 15rem;
+                overflow-y: scroll;
+
+                li {
+                    padding: 1rem;
+                    border-bottom: 1px solid black;
+                    background: white;
+                    cursor: pointer;
+
+                    &:last-child {
+                        border-bottom: none;
+                    }
+
+                    a {
+                        text-decoration: none;
+                        color: black;
+                    }
+                }
+            }
+        }
     }
 `;
 
@@ -162,14 +258,28 @@ const AbstractStatView = styled.section.attrs(
      * @param {ChartOptions} attrs.$chartOptions The options of chart shown in the stat view
      * @param {Criteria} attrs.$criteria The criteria object that controls view
      * @param {React.Dispatch<React.SetStateAction<Criteria>>} attrs.$setCriteria The setter of criteria object
+     * @param {Array<{ name: string, userNo: number }>} attrs.$userList List of users shown in the view
      * @returns {import('styled-components').Attrs}
      */
-    ({ $title, $description, $chartData = [], $chartOptions = {}, $criteria = {}, $setCriteria = () => {} }) => ({
+    ({
+        $title,
+        $description,
+        $chartData = [],
+        $chartOptions = {},
+        $criteria = {},
+        $setCriteria = () => {},
+        $userList = [],
+    }) => ({
         children: (
             <>
                 <h2>{$title}</h2>
                 <p>{$description}</p>
-                <CriteriaPanel $chartOptions={$chartOptions} $criteria={$criteria} $setCriteria={$setCriteria} />
+                <CriteriaPanel
+                    $chartOptions={$chartOptions}
+                    $criteria={$criteria}
+                    $setCriteria={$setCriteria}
+                    $userList={$userList}
+                />
                 <div className="graph">
                     <ResponsiveContainer
                         width="100%"
@@ -249,15 +359,41 @@ export const createStatView = (title, description, chartOptions = {}, chartDataG
             since: sinceToDate(data.bandInfo.since),
             until: new Date(Math.max(...Object.values(data.bandInfo.updated_at_status))),
             show: Object.fromEntries(chartOptions.series.map((series) => [series.key, true])),
+            userlist: [],
+            isUserlistForExclude: false,
         }));
 
         console.log(criteria);
+
+        const userList = Object.values(
+            data.posts.reduce((acc, post) => {
+                if (!acc[post.author.user_no])
+                    acc[post.author.user_no] = { name: post.author.name, userNo: post.author.user_no };
+
+                post.comments.reduce((acc, comment) => {
+                    if (!acc[comment.author.user_no])
+                        acc[comment.author.user_no] = { name: comment.author.name, userNo: comment.author.user_no };
+
+                    comment.comments.reduce((acc, comment) => {
+                        if (!acc[comment.author.user_no])
+                            acc[comment.author.user_no] = { name: comment.author.name, userNo: comment.author.user_no };
+
+                        return acc;
+                    }, acc);
+
+                    return acc;
+                }, acc);
+
+                return acc;
+            }, {})
+        );
 
         return (
             <AbstractStatView
                 $title={title}
                 $description={description}
                 $chartData={chartDataGenerator(data, criteria)}
+                $userList={userList}
                 $chartOptions={chartOptions}
                 $criteria={criteria}
                 $setCriteria={setCriteria}

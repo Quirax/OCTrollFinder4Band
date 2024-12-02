@@ -30,21 +30,42 @@ export const ArticlePerUser = createStatView(
     (data, criteria) =>
         Object.values(
             data.posts.reduce((acc, post) => {
-                if (new Date(post.created_at).isBetween(criteria.since, criteria.until)) {
+                if (
+                    new Date(post.created_at).isBetween(criteria.since, criteria.until) &&
+                    (criteria.userlist.length === 0 ||
+                        // If both conditions are all true or false (i.e. true and true, false and false)
+                        !(criteria.isUserlistForExclude ^ (criteria.userlist.indexOf(post.author.user_no) === -1)))
+                ) {
                     if (!acc[post.author.user_no])
                         acc[post.author.user_no] = { name: post.author.name, posts: 0, comments: 0 };
                     acc[post.author.user_no].posts++;
                 }
 
                 post.comments.reduce((acc, comment) => {
-                    if (new Date(comment.created_at).isBetween(criteria.since, criteria.until)) {
+                    if (
+                        new Date(comment.created_at).isBetween(criteria.since, criteria.until) &&
+                        (criteria.userlist.length === 0 ||
+                            // If both conditions are all true or false (i.e. true and true, false and false)
+                            !(
+                                criteria.isUserlistForExclude ^
+                                (criteria.userlist.indexOf(comment.author.user_no) === -1)
+                            ))
+                    ) {
                         if (!acc[comment.author.user_no])
                             acc[comment.author.user_no] = { name: comment.author.name, posts: 0, comments: 0 };
                         acc[comment.author.user_no].comments++;
                     }
 
                     comment.comments.reduce((acc, comment) => {
-                        if (new Date(comment.created_at).isBetween(criteria.since, criteria.until)) {
+                        if (
+                            new Date(comment.created_at).isBetween(criteria.since, criteria.until) &&
+                            (criteria.userlist.length === 0 ||
+                                // If both conditions are all true or false (i.e. true and true, false and false)
+                                !(
+                                    criteria.isUserlistForExclude ^
+                                    (criteria.userlist.indexOf(comment.author.user_no) === -1)
+                                ))
+                        ) {
                             if (!acc[comment.author.user_no])
                                 acc[comment.author.user_no] = { name: comment.author.name, posts: 0, comments: 0 };
                             acc[comment.author.user_no].comments++;
