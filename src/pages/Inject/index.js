@@ -3,32 +3,46 @@ import { printLine } from './modules/print';
 
 // Must reload extension for modifications to take effect.
 
-// printLine("Using the 'printLine' function from the Print Module");
+// A timestamp stores last request time
+let lastRequestTime = Date.now();
 
 const onEnterBandPage = async () => {
     const main = await getMain();
 
-    main.messenger.addListener(async (message, sendResponse) => {
+    main.messenger.addListener((message, sendResponse) => {
         let api = typeof message === 'object' ? message.api : message;
 
-        switch (api) {
-            case 'getPosts':
-                const { after, limit } = message;
-                const posts = await main.getPosts(after, limit);
-                sendResponse(posts);
-                break;
-            case 'getComments':
-                const { postNo, previousParams, commentId } = message;
-                const comments = await main.getComments(postNo, previousParams, commentId);
-                sendResponse(comments);
-                break;
-            case 'getBandInformation':
-                const bandInfo = await main.getBandInformation();
-                sendResponse(bandInfo);
-                break;
-            default:
-                sendResponse('UNKNOWN requests');
-        }
+        // Next request must be sent at least after 10ms of last request time
+        let runAfter = Math.max(lastRequestTime + 10 - Date.now(), 0);
+        // Set last request time during printing debug messages
+        console.debug(
+            `lastRequestTime = ${lastRequestTime}\t` +
+                `api = ${api}\t` +
+                `current ts = ${Date.now()}\t` +
+                `will run after ${runAfter}\t` +
+                `will run at ${(lastRequestTime = Date.now() + runAfter)}`
+        );
+
+        setTimeout(async () => {
+            switch (api) {
+                case 'getPosts':
+                    const { after, limit } = message;
+                    const posts = await main.getPosts(after, limit);
+                    sendResponse(posts);
+                    break;
+                case 'getComments':
+                    const { postNo, previousParams, commentId } = message;
+                    const comments = await main.getComments(postNo, previousParams, commentId);
+                    sendResponse(comments);
+                    break;
+                case 'getBandInformation':
+                    const bandInfo = await main.getBandInformation();
+                    sendResponse(bandInfo);
+                    break;
+                default:
+                    sendResponse('UNKNOWN requests');
+            }
+        }, runAfter);
     });
 };
 
