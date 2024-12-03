@@ -15,15 +15,15 @@ const onEnterBandPage = async () => {
         // Next request must be sent at least after 10ms of last request time
         let runAfter = Math.max(lastRequestTime + 10 - Date.now(), 0);
         // Set last request time during printing debug messages
-        console.groupCollapsed('Request Timing');
-        console.debug(
-            `lastRequestTime = ${lastRequestTime}\t` +
-                `api = ${api}\t` +
-                `current ts = ${Date.now()}\t` +
-                `will run after ${runAfter}\t` +
-                `will run at ${(lastRequestTime = Date.now() + runAfter)}`
-        );
-        console.groupEnd();
+
+        lastRequestTime = Date.now() + runAfter;
+        // console.debug(
+        //     `lastRequestTime = ${lastRequestTime}\t` +
+        //         `api = ${api}\t` +
+        //         `current ts = ${Date.now()}\t` +
+        //         `will run after ${runAfter}\t` +
+        //         `will run at ${(lastRequestTime = Date.now() + runAfter)}`
+        // );
 
         setTimeout(async () => {
             switch (api) {
