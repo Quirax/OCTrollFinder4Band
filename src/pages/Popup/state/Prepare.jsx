@@ -41,14 +41,32 @@ export const Prepare = ({ transition }) => {
     const [bandInfo, setBandInfo] = useState({});
 
     useMessenger((messenger) => {
-        messenger.send(messenger.Destination.Inject, { api: 'getBandInformation' }, (response) => {
-            if (response.result_code !== 1) {
+        messenger.send(messenger.Destination.Inject, { api: 'getBandInformation' }, (bandInfoResp) => {
+            if (bandInfoResp.result_code !== 1) {
                 // TODO: 오류 처리
-                console.error(response);
+                console.error(bandInfoResp);
                 return;
             }
 
-            setBandInfo(response.result_data.band);
+            // 현재 밴드의 총괄진인지 여부를 확인
+            messenger.send(messenger.Destination.Inject, { api: 'getMembersOfBand' }, (memberResp) => {
+                if (memberResp.result_code !== 1) {
+                    // TODO: 오류 처리
+                    console.error(memberResp);
+                    return;
+                }
+
+                // 현재 사용자가 밴드의 리더 또는 공동리더인지 확인
+                // 참고: 현재 사용자가 밴드에 가입하지 않았다면 권한 없음(200) 오류 발생
+                // TODO: 밴드의 총괄진이 아닌 경우에 대한 처리 추가
+                console.log(
+                    ['leader', 'coleader'].findIndex(
+                        (r) => r === memberResp.result_data.members.filter((m) => m.me)[0].role
+                    ) >= 0
+                );
+
+                setBandInfo(bandInfoResp.result_data.band);
+            });
         });
     }, []);
 
