@@ -3,6 +3,7 @@ import { State } from '.';
 import { styled } from 'styled-components';
 import { BottomButton } from '../common';
 import { useMessenger } from '../util';
+import { ErrorMessage } from './Error';
 
 const BandInfo = styled.div`
     display: flex;
@@ -58,14 +59,13 @@ export const Prepare = ({ transition }) => {
 
                 // 현재 사용자가 밴드의 리더 또는 공동리더인지 확인
                 // 참고: 현재 사용자가 밴드에 가입하지 않았다면 권한 없음(200) 오류 발생
-                // TODO: 밴드의 총괄진이 아닌 경우에 대한 처리 추가
-                console.log(
+                if (
                     ['leader', 'coleader'].findIndex(
                         (r) => r === memberResp.result_data.members.filter((m) => m.me)[0].role
-                    ) >= 0
-                );
-
-                setBandInfo(bandInfoResp.result_data.band);
+                    ) == -1
+                )
+                    transition(State.Error, { message: ErrorMessage.NotAColeader });
+                else setBandInfo(bandInfoResp.result_data.band);
             });
         });
     }, []);
