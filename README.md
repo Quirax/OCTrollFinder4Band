@@ -74,6 +74,12 @@ Original Character Community Troll Finder for Band (OCTrollFinder4Band)
 
 만약 그래프가 제대로 표시되지 않는다면, 이는 해당되는 자료가 없는 것일 수 있으므로 밴드 페이지에서 확인해봅니다.
 
+#### _(v1.1.1에서 추가)_ "이 밴드의 총괄진이 아닙니다" 메시지가 표시됨
+
+![그래프가 제대로 표시되지 않음](./docs/images/not-a-coleader.png)
+
+해당 밴드의 공식적인 총괄진(리더 또는 공동리더로 등록된 사용자)이 아닌 경우 분쟁 방지를 위해 통계 조회를 할 수 없습니다. 총괄에게 문의하시기 바랍니다.
+
 ## 배경
 
 자작 캐릭터(자캐)를 기반으로 한 커뮤니티(커뮤)는 창작자들이 밴드와 같은 플랫폼을 활용해 상호작용하며 운영됩니다. 그러나 특정 자캐만 우대받는 편파 문제로 인해 참여자 간 갈등이 발생하거나 커뮤 운영에 어려움이 생길 수 있습니다. 이를 해결하기 위해 커뮤 내 게시물과 반응 데이터를 분석하여 편파 여부를 객관적으로 확인할 수 있는 도구가 필요합니다.
@@ -108,12 +114,12 @@ Original Character Community Troll Finder for Band (OCTrollFinder4Band)
     -   ✅️ 게시물 목록에 접근
     -   ✅️ 댓글 목록에 접근
     -   ✅️ API 접근 속도 조절 ([#22](https://github.com/Quirax/OCTrollFinder4Band/issues/22))
-    -   ❎️ 사용자가 총괄진인 커뮤만 조회 가능하도록 변경 ([#24](https://github.com/Quirax/OCTrollFinder4Band/issues/24))
+    -   ✅️ 사용자가 총괄진인 커뮤만 조회 가능하도록 변경 ([#24](https://github.com/Quirax/OCTrollFinder4Band/issues/24))
 -   ✅️ Stat 페이지에서 분석
     -   ✅️ 데이터 전달
     -   ✅️ 분석 및 그래프로 표시
         -   ❎️ 댓글 글자수 표시 기능 추가 ([#23](https://github.com/Quirax/OCTrollFinder4Band/issues/23))
-        -   ❎️ 멘션 횟수 통계 추가 ([#25](https://github.com/Quirax/OCTrollFinder4Band/issues/25))
+        -   🗓 멘션 횟수 통계 추가 ([#25](https://github.com/Quirax/OCTrollFinder4Band/issues/25))
         -   ❎️ 정렬 시 순위가 표시되도록 하는 기능 추가 ([#26](https://github.com/Quirax/OCTrollFinder4Band/issues/26))
     -   ✅️ 표시할 대상 사용자를 선택하는 기능 추가([#21](https://github.com/Quirax/OCTrollFinder4Band/issues/21))
 -   ❎️ 설정
