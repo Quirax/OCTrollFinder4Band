@@ -60,6 +60,7 @@ export const Prepare = ({ transition }) => {
                 // 현재 사용자가 밴드의 리더 또는 공동리더인지 확인
                 // 참고: 현재 사용자가 밴드에 가입하지 않았다면 권한 없음(200) 오류 발생
                 if (
+                    process.env.NODE_ENV === 'production' &&
                     ['leader', 'coleader'].findIndex(
                         (r) => r === memberResp.result_data.members.filter((m) => m.me)[0].role
                     ) == -1
