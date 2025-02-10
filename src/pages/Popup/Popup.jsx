@@ -36,7 +36,7 @@ const Popup = () => {
             const tab = tabs[0];
             console.log(tab.url);
             if (tab.url.match(/band.us\/band\//)) setDefaultState(State.Prepare);
-            else setDefaultState(State.Non_Band);
+            else setDefaultState(State.Error);
         });
     }, []);
 

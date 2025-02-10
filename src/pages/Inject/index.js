@@ -41,6 +41,10 @@ const onEnterBandPage = async () => {
                     const bandInfo = await main.getBandInformation();
                     sendResponse(bandInfo);
                     break;
+                case 'getMembersOfBand':
+                    const membersOfBand = await main.getMembersOfBand();
+                    sendResponse(membersOfBand);
+                    break;
                 default:
                     sendResponse('UNKNOWN requests');
             }

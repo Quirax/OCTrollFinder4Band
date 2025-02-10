@@ -31,7 +31,7 @@
 
 ## 전체 실행 과정
 
-사용자가 밴드 페이지에 있지 않은 경우, [팝업](https://github.com/Quirax/OCTrollFinder4Band/blob/main/src/pages/Popup/Popup.jsx)에서 [관련된 안내 메시지를 표시](https://github.com/Quirax/OCTrollFinder4Band/blob/main/src/pages/Popup/state/Non_Band.jsx)합니다.
+사용자가 밴드 페이지에 있지 않은 경우, 또는 사용자가 해당 밴드의 총괄진(리더 및 공동리더)이 아닌 경우, [팝업](https://github.com/Quirax/OCTrollFinder4Band/blob/main/src/pages/Popup/Popup.jsx)에서 [관련된 안내 메시지를 표시](https://github.com/Quirax/OCTrollFinder4Band/blob/main/src/pages/Popup/state/Error.jsx)합니다.
 
 밴드 페이지에서 팝업을 표시하는 경우, [준비 상태의 화면](https://github.com/Quirax/OCTrollFinder4Band/blob/main/src/pages/Popup/state/Prepare.jsx)을 표시합니다. 여기서 `현재 밴드 분석하기` 버튼을 클릭하면, [밴드 내 모든 게시물과 댓글을 수집](https://github.com/Quirax/OCTrollFinder4Band/blob/main/src/pages/Popup/state/Processing.jsx)합니다. 이 때 밴드 페이지와 통신하여 API를 호출합니다. 수집이 완료되면 [local 확장 프로그램 storage](https://developer.chrome.com/docs/확장 프로그램s/reference/api/storage)에 저장한 뒤, Stat 페이지로 넘겨줍니다.
 

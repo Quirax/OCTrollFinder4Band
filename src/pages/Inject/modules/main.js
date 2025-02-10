@@ -60,6 +60,10 @@ const main = {
         get('https://api.band.us/v2.1.2/get_band_information', {
             band_no: bandNo(),
         }),
+    getMembersOfBand: () =>
+        get('https://api.band.us/v2.0.0/get_members_of_band', {
+            band_no: bandNo(),
+        }),
     messenger: getWindowMessenger(Destination.Inject, Destination.Content),
 };
 
