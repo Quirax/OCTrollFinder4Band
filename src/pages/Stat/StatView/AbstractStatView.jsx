@@ -263,6 +263,7 @@ const Rechart = ({ $chartData = [], $chartOptions = {}, $criteria = {} }) => (
     <ResponsiveContainer
         width="100%"
         height="100%"
+        // TODO: refactor
         children={
             <ComposedChart data={$chartData}>
                 <CartesianGrid strokeDasharray="3 3" />

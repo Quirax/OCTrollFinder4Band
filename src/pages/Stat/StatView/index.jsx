@@ -5,6 +5,7 @@ import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ArticlePerUser } from './ArticlePerUser';
 import { TotalReactsPerUser } from './TotalReactsPerUser';
 import { AvgReactsPerUser } from './AvgReactsPerUser';
+import { PeerMentions } from './PeerMentions';
 
 const statTypeWidth = 320;
 
@@ -126,7 +127,7 @@ const Item = styled.li.attrs({})`
     cursor: pointer;
 `;
 
-const statViews = [ArticlePerUser, TotalReactsPerUser, AvgReactsPerUser];
+const statViews = [ArticlePerUser, TotalReactsPerUser, AvgReactsPerUser, PeerMentions];
 
 export const StatView = ({ data }) => {
     const [showNav, setShowNav] = useState(false);
