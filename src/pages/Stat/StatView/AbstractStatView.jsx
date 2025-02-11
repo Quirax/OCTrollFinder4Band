@@ -29,6 +29,13 @@ export const SeriesType = createEnum('Line', 'Area');
  * @property {string} categoryKey A key of chart data that describes category
  * @property {boolean} extendXAxis A flag whether the chart needs to extend X axis
  * @property {Series[]} series A list of series
+ * @property {ChartElement} ChartElement A renderer of chart
+ */
+
+/**
+ * @callback ChartElement
+ * @param {{ $chartData: ChartData, $chartOptions: ChartOptions, $criteria: Criteria }} attrs
+ * @returns {React.JSX.Element}
  */
 
 /**
@@ -249,6 +256,35 @@ const CriteriaPanel = styled.details.attrs(
     }
 `;
 
+/**
+ * @type {ChartElement}
+ */
+const Rechart = ({ $chartData = [], $chartOptions = {}, $criteria = {} }) => (
+    <ResponsiveContainer
+        width="100%"
+        height="100%"
+        children={
+            <ComposedChart data={$chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                    // ref: https://github.com/recharts/recharts/issues/397
+                    dataKey={$chartOptions.categoryKey || 'name'}
+                    {...($chartOptions.extendXAxis && {
+                        textAnchor: 'end',
+                        interval: 0,
+                        angle: -40,
+                        height: 100,
+                    })}
+                />
+                <YAxis />
+                <Tooltip />
+                <Legend verticalAlign="top" />
+                {SeriesView($chartOptions.series, $criteria.sort, $criteria.show)}
+            </ComposedChart>
+        }
+    />
+);
+
 const AbstractStatView = styled.section.attrs(
     /**
      * @param {object} attrs
@@ -281,28 +317,10 @@ const AbstractStatView = styled.section.attrs(
                     $userList={$userList}
                 />
                 <div className="graph">
-                    <ResponsiveContainer
-                        width="100%"
-                        height="100%"
-                        children={
-                            <ComposedChart data={$chartData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis
-                                    // ref: https://github.com/recharts/recharts/issues/397
-                                    dataKey={$chartOptions.categoryKey || 'name'}
-                                    {...($chartOptions.extendXAxis && {
-                                        textAnchor: 'end',
-                                        interval: 0,
-                                        angle: -40,
-                                        height: 100,
-                                    })}
-                                />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend verticalAlign="top" />
-                                {SeriesView($chartOptions.series, $criteria.sort, $criteria.show)}
-                            </ComposedChart>
-                        }
+                    <$chartOptions.ChartElement
+                        $chartData={$chartData}
+                        $chartOptions={$chartOptions}
+                        $criteria={$criteria}
                     />
                 </div>
             </>
@@ -364,6 +382,8 @@ export const createStatView = (title, description, chartOptions = {}, chartDataG
         }));
 
         console.log(criteria);
+
+        chartOptions.ChartElement = chartOptions.ChartElement || Rechart;
 
         const userList = Object.values(
             data.posts.reduce((acc, post) => {
