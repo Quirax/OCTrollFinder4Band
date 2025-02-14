@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStatView, SeriesType } from './AbstractStatView';
 import Graph from 'react-graph-vis';
 import { createGlobalStyle } from 'styled-components';
@@ -11,6 +11,22 @@ const GraphStyle = createGlobalStyle`
         background-color: white;
     }
 `;
+
+const createItem = (acc, author) =>
+    acc[author.user_no] ||
+    (acc[author.user_no] = {
+        user_no: author.user_no,
+        name: author.name,
+        relationship: {},
+    });
+
+const createRelationship = (acc, from, to) =>
+    acc[from].relationship[to] ||
+    (acc[from].relationship[to] = {
+        user_no: to,
+        comments: 0,
+        mentions: 0,
+    });
 
 /**
  * @type {import('./AbstractStatView').StatView}
@@ -40,47 +56,58 @@ export const PeerMentions = createStatView(
         ],
         ChartElement: ({ $chartData, $chartOptions, $criteria }) => {
             const graph = {
-                nodes: [
-                    { id: 1, label: 'Node 1', title: 'node 1 tootip text' },
-                    { id: 2, label: 'Node 2', title: 'node 2 tootip text' },
-                    { id: 3, label: 'Node 3', title: 'node 3 tootip text' },
-                    { id: 4, label: 'Node 4', title: 'node 4 tootip text' },
-                    { id: 5, label: 'Node 5', title: 'node 5 tootip text' },
-                ],
-                edges: [
-                    { from: 1, to: 2, value: 1, title: 'absolute' },
-                    { from: 1, to: 3, value: 3 },
-                    { from: 2, to: 4, value: 5 },
-                    { from: 2, to: 5, value: 7 },
-                ],
+                nodes: $chartData.map((item) => ({
+                    id: item.user_no,
+                    label: item.name,
+                    title: `${item.name} (${item.user_no})`,
+                    group: item.relationship.reduce((acc, cur) => acc + cur.comments + cur.mentions, 0),
+                    connections: item.relationship.length,
+                })),
+                edges: $chartData.flatMap((from) =>
+                    from.relationship.map((to) => ({
+                        id: `${from.user_no}_${to.user_no}`,
+                        from: from.user_no,
+                        to: to.user_no,
+                        value: to.comments + to.mentions,
+                        title: `댓글 수: ${to.comments}\n멘션 수: ${to.mentions}`,
+                    }))
+                ),
             };
+
+            console.debug(graph);
 
             const options = {
                 layout: {
-                    hierarchical: true,
+                    hierarchical: false,
+                    improvedLayout: false,
                 },
                 edges: {
                     color: '#000000',
+                },
+                physics: {
+                    enabled: false,
                 },
             };
 
             const events = {
                 select: function (event) {
-                    var { nodes, edges } = event;
                     console.debug('On select node', event);
                 },
             };
 
-            let resizeGraph;
+            let [resizeGraph, setResizeGraph] = useState(null);
 
             useEffect(() => {
+                resizeGraph && resizeGraph();
+                window.addEventListener('resize', resizeGraph);
                 return () => window.removeEventListener('resize', resizeGraph);
-            });
+            }, [graph, resizeGraph]);
 
             return (
                 <>
                     <GraphStyle />
                     <Graph
+                        key={Date.now()}
                         graph={graph}
                         options={options}
                         events={events}
@@ -88,14 +115,14 @@ export const PeerMentions = createStatView(
                             const container = network.view.body.container;
                             console.debug('Graph container size', container.clientWidth, container.clientHeight);
 
-                            resizeGraph = () => {
+                            setResizeGraph(() => {
+                                network.setData(graph);
                                 network.setSize(0, 0);
                                 console.debug('Graph container size', container.clientWidth, container.clientHeight);
                                 network.setSize(container.clientWidth, container.clientHeight);
                                 network.fit();
-                            };
-
-                            window.addEventListener('resize', resizeGraph);
+                                network.clustering.clusterByHubsize();
+                            });
                         }}
                     />
                 </>
@@ -113,23 +140,58 @@ export const PeerMentions = createStatView(
                 )
                     return acc;
 
-                if (!acc[post.author.user_no])
-                    acc[post.author.user_no] = { name: post.author.name, reads: 0, comments: 0, emotions: 0, posts: 0 };
+                createItem(acc, post.author);
 
-                acc[post.author.user_no].posts++;
-                acc[post.author.user_no].reads += post.read_count;
-                acc[post.author.user_no].comments += post.comment_count;
-                acc[post.author.user_no].emotions += post.emotion_count;
+                [...post.content.matchAll(/<band:refer user_no="(\d*)">/gi)].forEach(([_, user_no]) => {
+                    const userNo = Number(user_no);
+                    createRelationship(acc, post.author.user_no, userNo).mentions++;
+                });
+
+                post.comments.reduce((acc, comment) => {
+                    if (
+                        new Date(comment.created_at).isBetween(criteria.since, criteria.until) &&
+                        (criteria.userlist.length === 0 ||
+                            // If both conditions are all true or false (i.e. true and true, false and false)
+                            !(
+                                criteria.isUserlistForExclude ^
+                                (criteria.userlist.indexOf(comment.author.user_no) === -1)
+                            ))
+                    ) {
+                        createItem(acc, comment.author);
+
+                        [...comment.body.matchAll(/<band:refer user_no="(\d*)">/gi)].forEach(([_, user_no]) => {
+                            const userNo = Number(user_no);
+                            createRelationship(acc, comment.author.user_no, userNo).mentions++;
+                        });
+
+                        createRelationship(acc, post.author.user_no, comment.author.user_no).comments++;
+                    }
+
+                    comment.comments.reduce((acc, comment) => {
+                        if (
+                            new Date(comment.created_at).isBetween(criteria.since, criteria.until) &&
+                            (criteria.userlist.length === 0 ||
+                                // If both conditions are all true or false (i.e. true and true, false and false)
+                                !(
+                                    criteria.isUserlistForExclude ^
+                                    (criteria.userlist.indexOf(comment.author.user_no) === -1)
+                                ))
+                        ) {
+                            createItem(acc, comment.author);
+
+                            [...comment.body.matchAll(/<band:refer user_no="(\d*)">/gi)].forEach(([_, user_no]) => {
+                                const userNo = Number(user_no);
+                                createRelationship(acc, comment.author.user_no, userNo).mentions++;
+                            });
+                        }
+
+                        return acc;
+                    }, acc);
+
+                    return acc;
+                }, acc);
 
                 return acc;
             }, {})
-        ).sort(
-            !criteria.sort || criteria.sort === 'name'
-                ? (a, b) => a.name.localeCompare(b.name) * (criteria.reverse ? -1 : 1)
-                : criteria.sort === 'total-value'
-                ? (a, b) =>
-                      (b.reads + b.comments + b.emotions - (a.reads + a.comments + a.emotions)) *
-                      (criteria.reverse ? -1 : 1)
-                : (a, b) => (b[criteria.sort] - a[criteria.sort]) * (criteria.reverse ? -1 : 1)
-        )
+        ).map((item) => ({ ...item, relationship: Object.values(item.relationship) }))
 );
