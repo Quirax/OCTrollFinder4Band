@@ -3,6 +3,7 @@ import { CartesianGrid, Legend, Line, Area, ComposedChart, ResponsiveContainer, 
 import styled from 'styled-components';
 import { createEnum, makeId } from '../../../modules/util';
 import { Tokenizer } from 'react-typeahead';
+import { SortCriteria } from './Criteria';
 
 /**
  * @enum {{Line, Area}} The type of series
@@ -82,35 +83,19 @@ const CriteriaPanel = styled.details.attrs(
      * @param {Criteria} attrs.$criteria The criteria object that controls view
      * @param {React.Dispatch<React.SetStateAction<Criteria>>} attrs.$setCriteria The setter of criteria object
      * @param {Array<{ name: string, userNo: number }>} attrs.$userList List of users shown in the view
+     * @param {React.JSX.Element} attrs.children Criteria elements
      * @returns {import('styled-components').Attrs}
      */
-    ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {}, $userList = [] }) => ({
+    ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {}, $userList = [], children }) => ({
         children: (
             <>
                 <summary>표시 옵션</summary>
-                <div>
-                    <label htmlFor="criteria-sort">정렬 기준: </label>
-                    <select
-                        id="criteria-sort"
-                        value={$criteria.sort}
-                        onChange={(e) => $setCriteria({ ...$criteria, sort: e.target.value })}
-                    >
-                        <option value="name">이름</option>
-                        <option value="total-value">총합</option>
-                        {$chartOptions.series.map(({ name, key }, idx) => (
-                            <option key={`criteria-sort-${idx}`} value={key}>
-                                {name}
-                            </option>
-                        ))}
-                    </select>
-                    <input
-                        type="checkbox"
-                        id="criteria-reverse"
-                        checked={$criteria.reverse}
-                        onChange={(e) => $setCriteria({ ...$criteria, reverse: e.target.checked })}
-                    />
-                    <label htmlFor="criteria-reverse">역순</label>
-                </div>
+                <SortCriteria
+                    $chartOptions={$chartOptions}
+                    $criteria={$criteria}
+                    $setCriteria={$setCriteria}
+                    $userList={$userList}
+                />
                 <div>
                     기간:{' '}
                     <input
