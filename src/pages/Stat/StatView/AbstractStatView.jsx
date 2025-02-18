@@ -3,7 +3,7 @@ import { CartesianGrid, Legend, Line, Area, ComposedChart, ResponsiveContainer, 
 import styled from 'styled-components';
 import { createEnum, makeId } from '../../../modules/util';
 import { Tokenizer } from 'react-typeahead';
-import { DateCriteria, SeriesCriteria, SortCriteria } from './Criteria';
+import { DateCriteria, SeriesCriteria, SortCriteria, UserCriteria } from './Criteria';
 
 /**
  * @enum {{Line, Area}} The type of series
@@ -91,45 +91,6 @@ const CriteriaPanel = styled.details.attrs(
             <>
                 <summary>표시 옵션</summary>
                 {children}
-                <fieldset>
-                    <legend>표시할 사용자</legend>
-                    <Tokenizer
-                        options={$userList.filter(({ userNo }) => $criteria.userlist.indexOf(userNo) === -1)}
-                        placeholder="사용자를 선택하세요."
-                        displayOption="name"
-                        filterOption="name"
-                        onTokenAdd={(token) => {
-                            let userlist = $criteria.userlist;
-                            userlist.push(token.userNo);
-                            $setCriteria({ ...$criteria, userlist });
-                        }}
-                        onTokenRemove={(token) => {
-                            let userlist = $criteria.userlist;
-                            let idx = userlist.findIndex((v) => v === token.userNo);
-                            if (idx > -1) userlist.splice(idx, 1);
-                            $setCriteria({ ...$criteria, userlist });
-                        }}
-                        showOptionsWhenEmpty={true}
-                    />
-                    <div>
-                        <input
-                            type="radio"
-                            id="criteria-user-bound"
-                            name="criteria-user"
-                            checked={!$criteria.isUserlistForExclude}
-                            onChange={(e) => $setCriteria({ ...$criteria, isUserlistForExclude: !e.target.checked })}
-                        />
-                        <label htmlFor="criteria-user-bound">선택한 사용자들만 표시</label>
-                        <input
-                            type="radio"
-                            id="criteria-user-exclude"
-                            name="criteria-user"
-                            checked={$criteria.isUserlistForExclude}
-                            onChange={(e) => $setCriteria({ ...$criteria, isUserlistForExclude: e.target.checked })}
-                        />
-                        <label htmlFor="criteria-user-exclude">선택한 사용자들을 제외하고 표시</label>
-                    </div>
-                </fieldset>
             </>
         ),
     })
@@ -140,59 +101,6 @@ const CriteriaPanel = styled.details.attrs(
 
     &[open] summary {
         margin-bottom: 1rem;
-    }
-
-    div.typeahead-tokenizer {
-        div.typeahead-token {
-            border: 1px solid black;
-            padding: 0.5em;
-            display: inline-block;
-
-            &:not(:first-child) {
-                border-left: none;
-            }
-
-            a.typeahead-token-close {
-                margin-left: 0.5em;
-                text-decoration: none;
-                color: gray;
-            }
-        }
-
-        div.typeahead {
-            margin-top: 0.5rem;
-
-            input {
-                width: 100%;
-            }
-
-            ul.typeahead-selector {
-                position: absolute;
-                border: 1px solid black;
-                list-style: none;
-                margin: 0;
-                padding: 0;
-                z-index: 1;
-                max-height: 15rem;
-                overflow-y: scroll;
-
-                li {
-                    padding: 1rem;
-                    border-bottom: 1px solid black;
-                    background: white;
-                    cursor: pointer;
-
-                    &:last-child {
-                        border-bottom: none;
-                    }
-
-                    a {
-                        text-decoration: none;
-                        color: black;
-                    }
-                }
-            }
-        }
     }
 `;
 
@@ -244,6 +152,12 @@ const DefaultCriteriaElements = ({ $chartOptions = {}, $criteria = {}, $setCrite
             $userList={$userList}
         />
         <SeriesCriteria
+            $chartOptions={$chartOptions}
+            $criteria={$criteria}
+            $setCriteria={$setCriteria}
+            $userList={$userList}
+        />
+        <UserCriteria
             $chartOptions={$chartOptions}
             $criteria={$criteria}
             $setCriteria={$setCriteria}
