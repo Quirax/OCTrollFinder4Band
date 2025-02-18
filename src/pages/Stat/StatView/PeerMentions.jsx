@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { createStatView, SeriesType } from './AbstractStatView';
 import Graph from 'react-graph-vis';
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle, styled } from 'styled-components';
+import { DateCriteria, SeriesCriteria, UserCriteria } from './Criteria';
 
 const GraphStyle = createGlobalStyle`
     div.vis-tooltip {
@@ -27,6 +28,32 @@ const createRelationship = (acc, from, to) =>
         comments: 0,
         mentions: 0,
     });
+
+export const HubsizeCriteria = styled.fieldset.attrs(
+    /**
+     * @type {import('./Criteria').CriteriaElement}
+     */ ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {}, $userList = [] }) => ({
+        children: (
+            <>
+                <legend>관계도 옵션</legend>
+                주로 대화하는 사용자 범위:{' '}
+                <input
+                    type="number"
+                    min={0}
+                    max={$userList.length}
+                    value={$criteria.hubSize ?? 0}
+                    onChange={(e) => {
+                        $setCriteria({
+                            ...$criteria,
+                            hubSize: Number(e.target.value),
+                        });
+                    }}
+                />
+                명 이하의 사용자와 대화하는 사용자를 제외한 나머지
+            </>
+        ),
+    })
+)``;
 
 /**
  * @type {import('./AbstractStatView').StatView}
@@ -54,6 +81,34 @@ export const PeerMentions = createStatView(
                 stackId: 1,
             },
         ],
+        CriteriaElements: ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {}, $userList = [] }) => (
+            <>
+                <DateCriteria
+                    $chartOptions={$chartOptions}
+                    $criteria={$criteria}
+                    $setCriteria={$setCriteria}
+                    $userList={$userList}
+                />
+                <SeriesCriteria
+                    $chartOptions={$chartOptions}
+                    $criteria={$criteria}
+                    $setCriteria={$setCriteria}
+                    $userList={$userList}
+                />
+                <UserCriteria
+                    $chartOptions={$chartOptions}
+                    $criteria={$criteria}
+                    $setCriteria={$setCriteria}
+                    $userList={$userList}
+                />
+                <HubsizeCriteria
+                    $chartOptions={$chartOptions}
+                    $criteria={$criteria}
+                    $setCriteria={$setCriteria}
+                    $userList={$userList}
+                />
+            </>
+        ),
         ChartElement: ({ $chartData, $chartOptions, $criteria }) => {
             const graph = {
                 nodes: $chartData.map((item) => ({
@@ -121,7 +176,9 @@ export const PeerMentions = createStatView(
                                 network.fit();
                             });
 
-                            network.clustering.clusterByHubsize({
+                            console.debug($criteria.hubSize ?? 0);
+
+                            network.clustering.clusterByHubsize(($criteria.hubSize ?? 0) * 2, {
                                 clusterNodeProperties: { label: '주로 대화하는 사용자', x: 0, y: 0 },
                             });
                         }}

@@ -74,6 +74,7 @@ const SeriesView = (series = [], first, show = {}) =>
  * @property {object} show
  * @property {Array<number>} userlist
  * @property {boolean} isUserlistForExclude
+ * @property {number} hubSize For graph view
  */
 
 const CriteriaPanel = styled.details.attrs(
