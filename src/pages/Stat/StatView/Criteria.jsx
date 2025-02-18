@@ -39,3 +39,42 @@ export const SortCriteria = styled.div.attrs(
         ),
     })
 )``;
+
+// ref: https://velog.io/@rkio/Javascript-YYYY-MM-DD-%ED%98%95%ED%83%9C%EC%9D%98-%EB%82%A0%EC%A7%9C-%EC%A0%95%EB%B3%B4%EB%A5%BC-%EB%A7%8C%EB%93%A4%EC%96%B4%EB%B3%B4%EC%9E%90
+const formatDate = (date) =>
+    `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date
+        .getDate()
+        .toString()
+        .padStart(2, '0')}`;
+
+export const DateCriteria = styled.div.attrs(
+    /**
+     * @type CriteriaElement
+     */
+    ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {}, $userList = [] }) => ({
+        children: (
+            <>
+                기간:{' '}
+                <input
+                    type="date"
+                    value={formatDate($criteria.since)}
+                    onChange={(e) => {
+                        let since = new Date(e.target.value).truncTime();
+                        $setCriteria({
+                            ...$criteria,
+                            since,
+                            until: new Date(Math.max(since, $criteria.until)).truncTime(),
+                        });
+                    }}
+                />{' '}
+                ~{' '}
+                <input
+                    type="date"
+                    min={formatDate($criteria.since)}
+                    value={formatDate($criteria.until)}
+                    onChange={(e) => $setCriteria({ ...$criteria, until: new Date(e.target.value).truncTime() })}
+                />
+            </>
+        ),
+    })
+)``;

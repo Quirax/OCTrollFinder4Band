@@ -3,7 +3,7 @@ import { CartesianGrid, Legend, Line, Area, ComposedChart, ResponsiveContainer, 
 import styled from 'styled-components';
 import { createEnum, makeId } from '../../../modules/util';
 import { Tokenizer } from 'react-typeahead';
-import { SortCriteria } from './Criteria';
+import { DateCriteria, SortCriteria } from './Criteria';
 
 /**
  * @enum {{Line, Area}} The type of series
@@ -31,11 +31,18 @@ export const SeriesType = createEnum('Line', 'Area');
  * @property {boolean} extendXAxis A flag whether the chart needs to extend X axis
  * @property {Series[]} series A list of series
  * @property {ChartElement} ChartElement A renderer of chart
+ * @property {CriteriaElements} CriteriaElements A renderer of criteria elements
  */
 
 /**
  * @callback ChartElement
  * @param {{ $chartData: ChartData, $chartOptions: ChartOptions, $criteria: Criteria }} attrs
+ * @returns {React.JSX.Element}
+ */
+
+/**
+ * @callback CriteriaElements
+ * @param {{ $chartOptions: ChartOptions, $criteria: Criteria, $setCriteria: React.Dispatch<React.SetStateAction<Criteria>>, $userList: Array<{ name: string, userNo: number }> }} attrs
  * @returns {React.JSX.Element}
  */
 
@@ -69,13 +76,6 @@ const SeriesView = (series = [], first, show = {}) =>
  * @property {boolean} isUserlistForExclude
  */
 
-// ref: https://velog.io/@rkio/Javascript-YYYY-MM-DD-%ED%98%95%ED%83%9C%EC%9D%98-%EB%82%A0%EC%A7%9C-%EC%A0%95%EB%B3%B4%EB%A5%BC-%EB%A7%8C%EB%93%A4%EC%96%B4%EB%B3%B4%EC%9E%90
-const formatDate = (date) =>
-    `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date
-        .getDate()
-        .toString()
-        .padStart(2, '0')}`;
-
 const CriteriaPanel = styled.details.attrs(
     /**
      * @param {object} attrs
@@ -90,34 +90,7 @@ const CriteriaPanel = styled.details.attrs(
         children: (
             <>
                 <summary>표시 옵션</summary>
-                <SortCriteria
-                    $chartOptions={$chartOptions}
-                    $criteria={$criteria}
-                    $setCriteria={$setCriteria}
-                    $userList={$userList}
-                />
-                <div>
-                    기간:{' '}
-                    <input
-                        type="date"
-                        value={formatDate($criteria.since)}
-                        onChange={(e) => {
-                            let since = new Date(e.target.value).truncTime();
-                            $setCriteria({
-                                ...$criteria,
-                                since,
-                                until: new Date(Math.max(since, $criteria.until)).truncTime(),
-                            });
-                        }}
-                    />{' '}
-                    ~{' '}
-                    <input
-                        type="date"
-                        min={formatDate($criteria.since)}
-                        value={formatDate($criteria.until)}
-                        onChange={(e) => $setCriteria({ ...$criteria, until: new Date(e.target.value).truncTime() })}
-                    />
-                </div>
+                {children}
                 <div>
                     표시할 항목:{' '}
                     {$chartOptions.series.map(({ name, key }, idx) => (
@@ -271,6 +244,26 @@ const Rechart = ({ $chartData = [], $chartOptions = {}, $criteria = {} }) => (
     />
 );
 
+/**
+ * @type {CriteriaElements}
+ */
+const DefaultCriteriaElements = ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {}, $userList = [] }) => (
+    <>
+        <SortCriteria
+            $chartOptions={$chartOptions}
+            $criteria={$criteria}
+            $setCriteria={$setCriteria}
+            $userList={$userList}
+        />
+        <DateCriteria
+            $chartOptions={$chartOptions}
+            $criteria={$criteria}
+            $setCriteria={$setCriteria}
+            $userList={$userList}
+        />
+    </>
+);
+
 const AbstractStatView = styled.section.attrs(
     /**
      * @param {object} attrs
@@ -301,7 +294,14 @@ const AbstractStatView = styled.section.attrs(
                     $criteria={$criteria}
                     $setCriteria={$setCriteria}
                     $userList={$userList}
-                />
+                >
+                    <$chartOptions.CriteriaElements
+                        $chartOptions={$chartOptions}
+                        $criteria={$criteria}
+                        $setCriteria={$setCriteria}
+                        $userList={$userList}
+                    />
+                </CriteriaPanel>
                 <div className="graph">
                     <$chartOptions.ChartElement
                         $chartData={$chartData}
@@ -370,6 +370,7 @@ export const createStatView = (title, description, chartOptions = {}, chartDataG
         console.log(criteria);
 
         chartOptions.ChartElement = chartOptions.ChartElement || Rechart;
+        chartOptions.CriteriaElements = chartOptions.CriteriaElements || DefaultCriteriaElements;
 
         const userList = Object.values(
             data.posts.reduce((acc, post) => {
