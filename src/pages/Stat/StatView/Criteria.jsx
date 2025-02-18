@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { styled } from 'styled-components';
 
 /**
@@ -74,6 +74,34 @@ export const DateCriteria = styled.div.attrs(
                     value={formatDate($criteria.until)}
                     onChange={(e) => $setCriteria({ ...$criteria, until: new Date(e.target.value).truncTime() })}
                 />
+            </>
+        ),
+    })
+)``;
+
+export const SeriesCriteria = styled.div.attrs(
+    /**
+     * @type CriteriaElement
+     */
+    ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {}, $userList = [] }) => ({
+        children: (
+            <>
+                표시할 항목:{' '}
+                {$chartOptions.series.map(({ name, key }, idx) => (
+                    <Fragment key={`criteria-show-${key}`}>
+                        <input
+                            type="checkbox"
+                            id={`criteria-show-${key}`}
+                            checked={$criteria.show[key]}
+                            onChange={(e) => {
+                                let show = $criteria.show;
+                                show[key] = e.target.checked;
+                                $setCriteria({ ...$criteria, show });
+                            }}
+                        />
+                        <label htmlFor={`criteria-show-${key}`}>{name}</label>{' '}
+                    </Fragment>
+                ))}
             </>
         ),
     })

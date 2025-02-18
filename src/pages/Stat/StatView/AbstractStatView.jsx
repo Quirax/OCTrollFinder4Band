@@ -3,7 +3,7 @@ import { CartesianGrid, Legend, Line, Area, ComposedChart, ResponsiveContainer, 
 import styled from 'styled-components';
 import { createEnum, makeId } from '../../../modules/util';
 import { Tokenizer } from 'react-typeahead';
-import { DateCriteria, SortCriteria } from './Criteria';
+import { DateCriteria, SeriesCriteria, SortCriteria } from './Criteria';
 
 /**
  * @enum {{Line, Area}} The type of series
@@ -91,24 +91,6 @@ const CriteriaPanel = styled.details.attrs(
             <>
                 <summary>표시 옵션</summary>
                 {children}
-                <div>
-                    표시할 항목:{' '}
-                    {$chartOptions.series.map(({ name, key }, idx) => (
-                        <Fragment key={`criteria-show-${key}`}>
-                            <input
-                                type="checkbox"
-                                id={`criteria-show-${key}`}
-                                checked={$criteria.show[key]}
-                                onChange={(e) => {
-                                    let show = $criteria.show;
-                                    show[key] = e.target.checked;
-                                    $setCriteria({ ...$criteria, show });
-                                }}
-                            />
-                            <label htmlFor={`criteria-show-${key}`}>{name}</label>{' '}
-                        </Fragment>
-                    ))}
-                </div>
                 <fieldset>
                     <legend>표시할 사용자</legend>
                     <Tokenizer
@@ -256,6 +238,12 @@ const DefaultCriteriaElements = ({ $chartOptions = {}, $criteria = {}, $setCrite
             $userList={$userList}
         />
         <DateCriteria
+            $chartOptions={$chartOptions}
+            $criteria={$criteria}
+            $setCriteria={$setCriteria}
+            $userList={$userList}
+        />
+        <SeriesCriteria
             $chartOptions={$chartOptions}
             $criteria={$criteria}
             $setCriteria={$setCriteria}
