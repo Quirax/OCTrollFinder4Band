@@ -60,8 +60,7 @@ export const PeerMentions = createStatView(
                     id: item.user_no,
                     label: item.name,
                     title: `${item.name} (${item.user_no})`,
-                    group: item.relationship.reduce((acc, cur) => acc + cur.comments + cur.mentions, 0),
-                    connections: item.relationship.length,
+                    group: item.relationship.length,
                 })),
                 edges: $chartData.flatMap((from) =>
                     from.relationship.map((to) => ({
@@ -116,12 +115,14 @@ export const PeerMentions = createStatView(
                             console.debug('Graph container size', container.clientWidth, container.clientHeight);
 
                             setResizeGraph(() => {
-                                network.setData(graph);
                                 network.setSize(0, 0);
                                 console.debug('Graph container size', container.clientWidth, container.clientHeight);
                                 network.setSize(container.clientWidth, container.clientHeight);
                                 network.fit();
-                                network.clustering.clusterByHubsize();
+                            });
+
+                            network.clustering.clusterByHubsize({
+                                clusterNodeProperties: { label: '주로 대화하는 사용자', x: 0, y: 0 },
                             });
                         }}
                     />
