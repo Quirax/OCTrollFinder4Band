@@ -21,9 +21,9 @@ const createItem = (acc, author) =>
         relationship: {},
     });
 
-const createRelationship = (acc, from, to) =>
-    acc[from].relationship[to] ||
-    (acc[from].relationship[to] = {
+const createRelationship = (from, to) =>
+    from.relationship[to] ||
+    (from.relationship[to] = {
         user_no: to,
         comments: 0,
         mentions: 0,
@@ -49,7 +49,7 @@ export const HubsizeCriteria = styled.fieldset.attrs(
                         });
                     }}
                 />
-                명 이하의 사용자와 대화하는 사용자를 제외한 나머지
+                명을 초과하는 사용자와 대화하는 사용자
             </>
         ),
     })
@@ -177,35 +177,48 @@ export const PeerMentions = createStatView(
                             });
 
                             console.debug($criteria.hubSize ?? 0);
-
-                            network.clustering.clusterByHubsize(($criteria.hubSize ?? 0) * 2, {
-                                clusterNodeProperties: { label: '주로 대화하는 사용자', x: 0, y: 0 },
-                            });
                         }}
                     />
                 </>
             );
         },
     },
-    (data, criteria) =>
-        Object.values(
-            data.posts.reduce((acc, post) => {
+    (data, criteria) => {
+        // const wholeUsers = Object.values(
+        const wholeUsers = data.posts.reduce((acc, post) => {
+            if (
+                !new Date(post.created_at).isBetween(criteria.since, criteria.until) ||
+                (criteria.userlist.length > 0 &&
+                    // If both conditions are all true or false (i.e. true and true, false and false)
+                    !!(criteria.isUserlistForExclude ^ (criteria.userlist.indexOf(post.author.user_no) === -1)))
+            )
+                return acc;
+
+            createItem(acc, post.author);
+
+            [...post.content.matchAll(/<band:refer user_no="(\d*)">/gi)].forEach(([_, user_no]) => {
+                const userNo = Number(user_no);
+                createRelationship(acc[post.author.user_no], userNo).mentions++;
+            });
+
+            post.comments.reduce((acc, comment) => {
                 if (
-                    !new Date(post.created_at).isBetween(criteria.since, criteria.until) ||
-                    (criteria.userlist.length > 0 &&
+                    new Date(comment.created_at).isBetween(criteria.since, criteria.until) &&
+                    (criteria.userlist.length === 0 ||
                         // If both conditions are all true or false (i.e. true and true, false and false)
-                        !!(criteria.isUserlistForExclude ^ (criteria.userlist.indexOf(post.author.user_no) === -1)))
-                )
-                    return acc;
+                        !(criteria.isUserlistForExclude ^ (criteria.userlist.indexOf(comment.author.user_no) === -1)))
+                ) {
+                    createItem(acc, comment.author);
 
-                createItem(acc, post.author);
+                    [...comment.body.matchAll(/<band:refer user_no="(\d*)">/gi)].forEach(([_, user_no]) => {
+                        const userNo = Number(user_no);
+                        createRelationship(acc[comment.author.user_no], userNo).mentions++;
+                    });
 
-                [...post.content.matchAll(/<band:refer user_no="(\d*)">/gi)].forEach(([_, user_no]) => {
-                    const userNo = Number(user_no);
-                    createRelationship(acc, post.author.user_no, userNo).mentions++;
-                });
+                    createRelationship(acc[post.author.user_no], comment.author.user_no).comments++;
+                }
 
-                post.comments.reduce((acc, comment) => {
+                comment.comments.reduce((acc, comment) => {
                     if (
                         new Date(comment.created_at).isBetween(criteria.since, criteria.until) &&
                         (criteria.userlist.length === 0 ||
@@ -219,37 +232,82 @@ export const PeerMentions = createStatView(
 
                         [...comment.body.matchAll(/<band:refer user_no="(\d*)">/gi)].forEach(([_, user_no]) => {
                             const userNo = Number(user_no);
-                            createRelationship(acc, comment.author.user_no, userNo).mentions++;
+                            createRelationship(acc[comment.author.user_no], userNo).mentions++;
                         });
-
-                        createRelationship(acc, post.author.user_no, comment.author.user_no).comments++;
                     }
-
-                    comment.comments.reduce((acc, comment) => {
-                        if (
-                            new Date(comment.created_at).isBetween(criteria.since, criteria.until) &&
-                            (criteria.userlist.length === 0 ||
-                                // If both conditions are all true or false (i.e. true and true, false and false)
-                                !(
-                                    criteria.isUserlistForExclude ^
-                                    (criteria.userlist.indexOf(comment.author.user_no) === -1)
-                                ))
-                        ) {
-                            createItem(acc, comment.author);
-
-                            [...comment.body.matchAll(/<band:refer user_no="(\d*)">/gi)].forEach(([_, user_no]) => {
-                                const userNo = Number(user_no);
-                                createRelationship(acc, comment.author.user_no, userNo).mentions++;
-                            });
-                        }
-
-                        return acc;
-                    }, acc);
 
                     return acc;
                 }, acc);
 
                 return acc;
-            }, {})
-        ).map((item) => ({ ...item, relationship: Object.values(item.relationship) }))
+            }, acc);
+
+            return acc;
+        }, {});
+
+        const mainstream = createItem(
+            {},
+            {
+                user_no: 'mainstream',
+                name: '주로 대화하는 사용자',
+            }
+        );
+
+        const entriesInsideMainstream = [];
+        const entriesOutsideMainstream = [];
+
+        Object.entries(wholeUsers).forEach((entry) => {
+            if (Object.keys(entry[1].relationship).length > (criteria.hubSize ?? 0))
+                entriesInsideMainstream.push(entry);
+            else entriesOutsideMainstream.push(entry);
+        });
+
+        const usersInsideMainstream = Object.fromEntries(entriesInsideMainstream);
+        const userIdsInsideMainstream = Object.keys(usersInsideMainstream).map((id) => Number(id));
+
+        const chartData = entriesOutsideMainstream
+            .map(([_, value]) => value)
+            .map((user) => {
+                const entriesToOutside = [];
+                const entriesToInside = [];
+
+                console.log(user);
+
+                Object.entries(user.relationship).forEach((entry) => {
+                    if (userIdsInsideMainstream.indexOf(entry[1].user_no) === -1) entriesToOutside.push(entry);
+                    else entriesToInside.push(entry);
+                });
+
+                const relationship = Object.fromEntries(entriesToOutside);
+                const toMainstream = createRelationship({ relationship }, 'mainstream');
+
+                entriesToInside.forEach(([_, value]) => {
+                    toMainstream.comments += value.comments;
+                    toMainstream.mentions += value.mentions;
+                });
+
+                entriesInsideMainstream.forEach(([_, value]) => {
+                    const fromMainstream = createRelationship(mainstream, user.user_no);
+                    fromMainstream.comments +=
+                        usersInsideMainstream[value.user_no]?.relationship[user.user_no]?.comments || 0;
+                    fromMainstream.mentions +=
+                        usersInsideMainstream[value.user_no]?.relationship[user.user_no]?.mentions || 0;
+                });
+
+                if (toMainstream.comments + toMainstream.mentions === 0) delete relationship['mainstream'];
+                if (
+                    mainstream.relationship[user.user_no].comments + mainstream.relationship[user.user_no].mentions ===
+                    0
+                )
+                    delete mainstream.relationship[user.user_no];
+
+                return { ...user, relationship: Object.values(relationship) };
+            });
+
+        chartData.push({ ...mainstream, relationship: Object.values(mainstream.relationship) });
+
+        console.debug(chartData);
+
+        return chartData;
+    }
 );
