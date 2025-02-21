@@ -114,7 +114,10 @@ export const PeerMentions = createStatView(
                 nodes: $chartData.map((item) => ({
                     id: item.user_no,
                     label: item.name,
-                    title: `${item.name} (${item.user_no})`,
+                    title:
+                        item.user_no === 'mainstream'
+                            ? `${$criteria.hubSize ?? 0}명을 초과하는 사용자와 대화하는 사용자`
+                            : `${item.name} (${item.user_no})`,
                     group: item.relationship.length,
                 })),
                 edges: $chartData.flatMap((from) =>
