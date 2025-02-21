@@ -127,6 +127,7 @@ export const PeerMentions = createStatView(
                             ? `${$criteria.hubSize ?? 0}명을 초과하는 사용자와 대화하는 사용자`
                             : `${item.name} (${item.user_no})`,
                     group: item.relationship.length,
+                    // TODO: set position to be more readable
                 })),
                 edges: $chartData.flatMap((from) =>
                     from.relationship.map((to) => ({
@@ -160,6 +161,7 @@ export const PeerMentions = createStatView(
                 physics: {
                     enabled: false,
                 },
+                // TODO: set colors of each groups constantly
             };
 
             const events = {
