@@ -3,6 +3,7 @@ import { CartesianGrid, Legend, Line, Area, ComposedChart, ResponsiveContainer, 
 import styled from 'styled-components';
 import { createEnum, makeId } from '../../../modules/util';
 import { Tokenizer } from 'react-typeahead';
+import { DateCriteria, SeriesCriteria, SortCriteria, UserCriteria } from './Criteria';
 
 /**
  * @enum {{Line, Area}} The type of series
@@ -29,6 +30,20 @@ export const SeriesType = createEnum('Line', 'Area');
  * @property {string} categoryKey A key of chart data that describes category
  * @property {boolean} extendXAxis A flag whether the chart needs to extend X axis
  * @property {Series[]} series A list of series
+ * @property {ChartElement} ChartElement A renderer of chart
+ * @property {CriteriaElements} CriteriaElements A renderer of criteria elements
+ */
+
+/**
+ * @callback ChartElement
+ * @param {{ $chartData: ChartData, $chartOptions: ChartOptions, $criteria: Criteria }} attrs
+ * @returns {React.JSX.Element}
+ */
+
+/**
+ * @callback CriteriaElements
+ * @param {{ $chartOptions: ChartOptions, $criteria: Criteria, $setCriteria: React.Dispatch<React.SetStateAction<Criteria>>, $userList: Array<{ name: string, userNo: number }> }} attrs
+ * @returns {React.JSX.Element}
  */
 
 /**
@@ -59,14 +74,9 @@ const SeriesView = (series = [], first, show = {}) =>
  * @property {object} show
  * @property {Array<number>} userlist
  * @property {boolean} isUserlistForExclude
+ * @property {number} hubSize For graph view
+ * @property {boolean} isOpened
  */
-
-// ref: https://velog.io/@rkio/Javascript-YYYY-MM-DD-%ED%98%95%ED%83%9C%EC%9D%98-%EB%82%A0%EC%A7%9C-%EC%A0%95%EB%B3%B4%EB%A5%BC-%EB%A7%8C%EB%93%A4%EC%96%B4%EB%B3%B4%EC%9E%90
-const formatDate = (date) =>
-    `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date
-        .getDate()
-        .toString()
-        .padStart(2, '0')}`;
 
 const CriteriaPanel = styled.details.attrs(
     /**
@@ -75,116 +85,19 @@ const CriteriaPanel = styled.details.attrs(
      * @param {Criteria} attrs.$criteria The criteria object that controls view
      * @param {React.Dispatch<React.SetStateAction<Criteria>>} attrs.$setCriteria The setter of criteria object
      * @param {Array<{ name: string, userNo: number }>} attrs.$userList List of users shown in the view
+     * @param {React.JSX.Element} attrs.children Criteria elements
      * @returns {import('styled-components').Attrs}
      */
-    ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {}, $userList = [] }) => ({
+    ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {}, $userList = [], children }) => ({
         children: (
             <>
                 <summary>표시 옵션</summary>
-                <div>
-                    <label htmlFor="criteria-sort">정렬 기준: </label>
-                    <select
-                        id="criteria-sort"
-                        value={$criteria.sort}
-                        onChange={(e) => $setCriteria({ ...$criteria, sort: e.target.value })}
-                    >
-                        <option value="name">이름</option>
-                        <option value="total-value">총합</option>
-                        {$chartOptions.series.map(({ name, key }, idx) => (
-                            <option key={`criteria-sort-${idx}`} value={key}>
-                                {name}
-                            </option>
-                        ))}
-                    </select>
-                    <input
-                        type="checkbox"
-                        id="criteria-reverse"
-                        checked={$criteria.reverse}
-                        onChange={(e) => $setCriteria({ ...$criteria, reverse: e.target.checked })}
-                    />
-                    <label htmlFor="criteria-reverse">역순</label>
-                </div>
-                <div>
-                    기간:{' '}
-                    <input
-                        type="date"
-                        value={formatDate($criteria.since)}
-                        onChange={(e) => {
-                            let since = new Date(e.target.value).truncTime();
-                            $setCriteria({
-                                ...$criteria,
-                                since,
-                                until: new Date(Math.max(since, $criteria.until)).truncTime(),
-                            });
-                        }}
-                    />{' '}
-                    ~{' '}
-                    <input
-                        type="date"
-                        min={formatDate($criteria.since)}
-                        value={formatDate($criteria.until)}
-                        onChange={(e) => $setCriteria({ ...$criteria, until: new Date(e.target.value).truncTime() })}
-                    />
-                </div>
-                <div>
-                    표시할 항목:{' '}
-                    {$chartOptions.series.map(({ name, key }, idx) => (
-                        <Fragment key={`criteria-show-${key}`}>
-                            <input
-                                type="checkbox"
-                                id={`criteria-show-${key}`}
-                                checked={$criteria.show[key]}
-                                onChange={(e) => {
-                                    let show = $criteria.show;
-                                    show[key] = e.target.checked;
-                                    $setCriteria({ ...$criteria, show });
-                                }}
-                            />
-                            <label htmlFor={`criteria-show-${key}`}>{name}</label>{' '}
-                        </Fragment>
-                    ))}
-                </div>
-                <fieldset>
-                    <legend>표시할 사용자</legend>
-                    <Tokenizer
-                        options={$userList.filter(({ userNo }) => $criteria.userlist.indexOf(userNo) === -1)}
-                        placeholder="사용자를 선택하세요."
-                        displayOption="name"
-                        filterOption="name"
-                        onTokenAdd={(token) => {
-                            let userlist = $criteria.userlist;
-                            userlist.push(token.userNo);
-                            $setCriteria({ ...$criteria, userlist });
-                        }}
-                        onTokenRemove={(token) => {
-                            let userlist = $criteria.userlist;
-                            let idx = userlist.findIndex((v) => v === token.userNo);
-                            if (idx > -1) userlist.splice(idx, 1);
-                            $setCriteria({ ...$criteria, userlist });
-                        }}
-                        showOptionsWhenEmpty={true}
-                    />
-                    <div>
-                        <input
-                            type="radio"
-                            id="criteria-user-bound"
-                            name="criteria-user"
-                            checked={!$criteria.isUserlistForExclude}
-                            onChange={(e) => $setCriteria({ ...$criteria, isUserlistForExclude: !e.target.checked })}
-                        />
-                        <label htmlFor="criteria-user-bound">선택한 사용자들만 표시</label>
-                        <input
-                            type="radio"
-                            id="criteria-user-exclude"
-                            name="criteria-user"
-                            checked={$criteria.isUserlistForExclude}
-                            onChange={(e) => $setCriteria({ ...$criteria, isUserlistForExclude: e.target.checked })}
-                        />
-                        <label htmlFor="criteria-user-exclude">선택한 사용자들을 제외하고 표시</label>
-                    </div>
-                </fieldset>
+                {children}
             </>
         ),
+        onToggle: ({ target }) => {
+            $setCriteria({ ...$criteria, isOpened: target.open });
+        },
     })
 )`
     margin-bottom: 1rem;
@@ -194,60 +107,70 @@ const CriteriaPanel = styled.details.attrs(
     &[open] summary {
         margin-bottom: 1rem;
     }
-
-    div.typeahead-tokenizer {
-        div.typeahead-token {
-            border: 1px solid black;
-            padding: 0.5em;
-            display: inline-block;
-
-            &:not(:first-child) {
-                border-left: none;
-            }
-
-            a.typeahead-token-close {
-                margin-left: 0.5em;
-                text-decoration: none;
-                color: gray;
-            }
-        }
-
-        div.typeahead {
-            margin-top: 0.5rem;
-
-            input {
-                width: 100%;
-            }
-
-            ul.typeahead-selector {
-                position: absolute;
-                border: 1px solid black;
-                list-style: none;
-                margin: 0;
-                padding: 0;
-                z-index: 1;
-                max-height: 15rem;
-                overflow-y: scroll;
-
-                li {
-                    padding: 1rem;
-                    border-bottom: 1px solid black;
-                    background: white;
-                    cursor: pointer;
-
-                    &:last-child {
-                        border-bottom: none;
-                    }
-
-                    a {
-                        text-decoration: none;
-                        color: black;
-                    }
-                }
-            }
-        }
-    }
 `;
+
+/**
+ * @type {ChartElement}
+ */
+const Rechart = ({ $chartData = [], $chartOptions = {}, $criteria = {} }) => (
+    <ResponsiveContainer
+        width="100%"
+        height="100%"
+        // TODO: refactor
+        // TODO: fix height exceeding when criteria details is opened
+        children={
+            <ComposedChart data={$chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                    // ref: https://github.com/recharts/recharts/issues/397
+                    dataKey={$chartOptions.categoryKey || 'name'}
+                    {...($chartOptions.extendXAxis && {
+                        textAnchor: 'end',
+                        interval: 0,
+                        angle: -40,
+                        height: 100,
+                    })}
+                />
+                <YAxis />
+                <Tooltip />
+                <Legend verticalAlign="top" />
+                {SeriesView($chartOptions.series, $criteria.sort, $criteria.show)}
+            </ComposedChart>
+        }
+    />
+);
+
+/**
+ * @type {CriteriaElements}
+ */
+const DefaultCriteriaElements = ({ $chartOptions = {}, $criteria = {}, $setCriteria = () => {}, $userList = [] }) => (
+    <>
+        <SortCriteria
+            $chartOptions={$chartOptions}
+            $criteria={$criteria}
+            $setCriteria={$setCriteria}
+            $userList={$userList}
+        />
+        <DateCriteria
+            $chartOptions={$chartOptions}
+            $criteria={$criteria}
+            $setCriteria={$setCriteria}
+            $userList={$userList}
+        />
+        <SeriesCriteria
+            $chartOptions={$chartOptions}
+            $criteria={$criteria}
+            $setCriteria={$setCriteria}
+            $userList={$userList}
+        />
+        <UserCriteria
+            $chartOptions={$chartOptions}
+            $criteria={$criteria}
+            $setCriteria={$setCriteria}
+            $userList={$userList}
+        />
+    </>
+);
 
 const AbstractStatView = styled.section.attrs(
     /**
@@ -279,30 +202,19 @@ const AbstractStatView = styled.section.attrs(
                     $criteria={$criteria}
                     $setCriteria={$setCriteria}
                     $userList={$userList}
-                />
+                >
+                    <$chartOptions.CriteriaElements
+                        $chartOptions={$chartOptions}
+                        $criteria={$criteria}
+                        $setCriteria={$setCriteria}
+                        $userList={$userList}
+                    />
+                </CriteriaPanel>
                 <div className="graph">
-                    <ResponsiveContainer
-                        width="100%"
-                        height="100%"
-                        children={
-                            <ComposedChart data={$chartData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis
-                                    // ref: https://github.com/recharts/recharts/issues/397
-                                    dataKey={$chartOptions.categoryKey || 'name'}
-                                    {...($chartOptions.extendXAxis && {
-                                        textAnchor: 'end',
-                                        interval: 0,
-                                        angle: -40,
-                                        height: 100,
-                                    })}
-                                />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend verticalAlign="top" />
-                                {SeriesView($chartOptions.series, $criteria.sort, $criteria.show)}
-                            </ComposedChart>
-                        }
+                    <$chartOptions.ChartElement
+                        $chartData={$chartData}
+                        $chartOptions={$chartOptions}
+                        $criteria={$criteria}
                     />
                 </div>
             </>
@@ -364,6 +276,9 @@ export const createStatView = (title, description, chartOptions = {}, chartDataG
         }));
 
         console.log(criteria);
+
+        chartOptions.ChartElement = chartOptions.ChartElement || Rechart;
+        chartOptions.CriteriaElements = chartOptions.CriteriaElements || DefaultCriteriaElements;
 
         const userList = Object.values(
             data.posts.reduce((acc, post) => {
