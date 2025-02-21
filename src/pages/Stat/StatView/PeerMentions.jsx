@@ -149,19 +149,33 @@ export const PeerMentions = createStatView(
                 },
             };
 
-            let [resizeGraph, setResizeGraph] = useState(null);
+            let [network, setNetwork] = useState(null);
 
             useEffect(() => {
-                resizeGraph && resizeGraph();
+                if (!network) return;
+
+                const resizeGraph = () => {
+                    const container = network.view.body.container;
+
+                    network.setSize(0, 0);
+                    console.debug('[Resized] Graph container size', container.clientWidth, container.clientHeight);
+                    network.setSize(container.clientWidth, container.clientHeight);
+                    network.fit();
+                };
+                resizeGraph();
+
                 window.addEventListener('resize', resizeGraph);
-                return () => window.removeEventListener('resize', resizeGraph);
-            }, [graph, resizeGraph]);
+
+                return () => {
+                    window.removeEventListener('resize', resizeGraph);
+                };
+            }, [network]);
 
             return (
                 <>
                     <GraphStyle />
                     <Graph
-                        key={Date.now()}
+                        key={$criteria.hubSize}
                         graph={graph}
                         options={options}
                         events={events}
@@ -169,14 +183,9 @@ export const PeerMentions = createStatView(
                             const container = network.view.body.container;
                             console.debug('Graph container size', container.clientWidth, container.clientHeight);
 
-                            setResizeGraph(() => {
-                                network.setSize(0, 0);
-                                console.debug('Graph container size', container.clientWidth, container.clientHeight);
-                                network.setSize(container.clientWidth, container.clientHeight);
-                                network.fit();
-                            });
+                            setNetwork(network);
 
-                            console.debug($criteria.hubSize ?? 0);
+                            console.debug(`Hubsize = ${$criteria.hubSize ?? 0}`);
                         }}
                     />
                 </>
@@ -270,8 +279,6 @@ export const PeerMentions = createStatView(
             .map((user) => {
                 const entriesToOutside = [];
                 const entriesToInside = [];
-
-                console.log(user);
 
                 Object.entries(user.relationship).forEach((entry) => {
                     if (userIdsInsideMainstream.indexOf(entry[1].user_no) === -1) entriesToOutside.push(entry);
