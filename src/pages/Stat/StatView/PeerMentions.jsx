@@ -27,7 +27,15 @@ const createRelationship = (from, to) =>
         user_no: to,
         comments: 0,
         mentions: 0,
+        hasReverse: false,
     });
+
+const checkReverse = (acc, from, to) => {
+    if (acc[from]?.relationship[to] && acc[to]?.relationship[from]) {
+        acc[from].relationship[to].hasReverse = true;
+        acc[to].relationship[from].hasReverse = true;
+    }
+};
 
 export const HubsizeCriteria = styled.fieldset.attrs(
     /**
@@ -127,6 +135,13 @@ export const PeerMentions = createStatView(
                         to: to.user_no,
                         value: to.comments + to.mentions,
                         title: `댓글 수: ${to.comments}\n멘션 수: ${to.mentions}`,
+                        smooth: to.hasReverse
+                            ? {
+                                  enabled: true,
+                                  type: 'curvedCW',
+                                  roundness: 0.1,
+                              }
+                            : false,
                     }))
                 ),
             };
@@ -140,6 +155,7 @@ export const PeerMentions = createStatView(
                 },
                 edges: {
                     color: '#000000',
+                    selectionWidth: 0,
                 },
                 physics: {
                     enabled: false,
@@ -211,6 +227,7 @@ export const PeerMentions = createStatView(
             [...post.content.matchAll(/<band:refer user_no="(\d*)">/gi)].forEach(([_, user_no]) => {
                 const userNo = Number(user_no);
                 createRelationship(acc[post.author.user_no], userNo).mentions++;
+                checkReverse(acc, post.author.user_no, userNo);
             });
 
             post.comments.reduce((acc, comment) => {
@@ -225,9 +242,11 @@ export const PeerMentions = createStatView(
                     [...comment.body.matchAll(/<band:refer user_no="(\d*)">/gi)].forEach(([_, user_no]) => {
                         const userNo = Number(user_no);
                         createRelationship(acc[comment.author.user_no], userNo).mentions++;
+                        checkReverse(acc, comment.author.user_no, userNo);
                     });
 
                     createRelationship(acc[post.author.user_no], comment.author.user_no).comments++;
+                    checkReverse(acc, post.author.user_no, comment.author.user_no);
                 }
 
                 comment.comments.reduce((acc, comment) => {
@@ -245,6 +264,7 @@ export const PeerMentions = createStatView(
                         [...comment.body.matchAll(/<band:refer user_no="(\d*)">/gi)].forEach(([_, user_no]) => {
                             const userNo = Number(user_no);
                             createRelationship(acc[comment.author.user_no], userNo).mentions++;
+                            checkReverse(acc, comment.author.user_no, userNo);
                         });
                     }
 
@@ -310,6 +330,11 @@ export const PeerMentions = createStatView(
                     0
                 )
                     delete mainstream.relationship[user.user_no];
+
+                if (relationship['mainstream'] && mainstream.relationship[user.user_no]) {
+                    toMainstream.hasReverse = true;
+                    mainstream.relationship[user.user_no].hasReverse = true;
+                }
 
                 return { ...user, relationship: Object.values(relationship) };
             });
