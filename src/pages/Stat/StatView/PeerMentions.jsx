@@ -175,7 +175,7 @@ export const PeerMentions = createStatView(
                 <>
                     <GraphStyle />
                     <Graph
-                        key={$criteria.hubSize}
+                        key={`${$criteria.hubSize}_${$criteria.isOpened}`}
                         graph={graph}
                         options={options}
                         events={events}

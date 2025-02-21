@@ -75,6 +75,7 @@ const SeriesView = (series = [], first, show = {}) =>
  * @property {Array<number>} userlist
  * @property {boolean} isUserlistForExclude
  * @property {number} hubSize For graph view
+ * @property {boolean} isOpened
  */
 
 const CriteriaPanel = styled.details.attrs(
@@ -94,6 +95,9 @@ const CriteriaPanel = styled.details.attrs(
                 {children}
             </>
         ),
+        onToggle: ({ target }) => {
+            $setCriteria({ ...$criteria, isOpened: target.open });
+        },
     })
 )`
     margin-bottom: 1rem;
@@ -113,6 +117,7 @@ const Rechart = ({ $chartData = [], $chartOptions = {}, $criteria = {} }) => (
         width="100%"
         height="100%"
         // TODO: refactor
+        // TODO: fix height exceeding when criteria details is opened
         children={
             <ComposedChart data={$chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
