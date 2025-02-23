@@ -196,7 +196,7 @@ export const PeerMentions = createStatView(
                 <>
                     <GraphStyle />
                     <Graph
-                        key={`${$criteria.hubSize}_${$criteria.isOpened}`}
+                        key={JSON.stringify($criteria)} // Whenever the criteria is modified, recreate graph
                         graph={graph}
                         options={options}
                         events={events}
@@ -328,7 +328,8 @@ export const PeerMentions = createStatView(
 
                 if (toMainstream.comments + toMainstream.mentions === 0) delete relationship['mainstream'];
                 if (
-                    mainstream.relationship[user.user_no].comments + mainstream.relationship[user.user_no].mentions ===
+                    mainstream.relationship[user.user_no]?.comments +
+                        mainstream.relationship[user.user_no]?.mentions ===
                     0
                 )
                     delete mainstream.relationship[user.user_no];
@@ -341,7 +342,9 @@ export const PeerMentions = createStatView(
                 return { ...user, relationship: Object.values(relationship) };
             });
 
-        chartData.push({ ...mainstream, relationship: Object.values(mainstream.relationship) });
+        if (entriesInsideMainstream.length > 0)
+            // Show mainstream node only when there is entries inside mainstream
+            chartData.push({ ...mainstream, relationship: Object.values(mainstream.relationship) });
 
         console.debug(chartData);
 
