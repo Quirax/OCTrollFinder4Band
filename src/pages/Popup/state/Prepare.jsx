@@ -4,6 +4,7 @@ import { styled } from 'styled-components';
 import { BottomButton } from '../common';
 import { useMessenger } from '../util';
 import { ErrorMessage } from './Error';
+import { TEST_FLAGS } from '..';
 
 const BandInfo = styled.div`
     display: flex;
@@ -43,17 +44,23 @@ export const Prepare = ({ transition }) => {
 
     useMessenger((messenger) => {
         messenger.send(messenger.Destination.Inject, { api: 'getBandInformation' }, (bandInfoResp) => {
-            if (bandInfoResp.result_code !== 1) {
-                // TODO: 오류 처리
-                console.error(bandInfoResp);
+            if (bandInfoResp.result_code !== 1 || TEST_FLAGS.BandInfoRespondWithError) {
+                transition(State.Error, {
+                    message: ErrorMessage.RespondWithError,
+                    at: 'Popup/Prepare/getBandInformation',
+                    response: bandInfoResp,
+                });
                 return;
             }
 
             // 현재 밴드의 총괄진인지 여부를 확인
             messenger.send(messenger.Destination.Inject, { api: 'getMembersOfBand' }, (memberResp) => {
-                if (memberResp.result_code !== 1) {
-                    // TODO: 오류 처리
-                    console.error(memberResp);
+                if (memberResp.result_code !== 1 || TEST_FLAGS.MemberOfBandRespondWithError) {
+                    transition(State.Error, {
+                        message: ErrorMessage.RespondWithError,
+                        at: 'Popup/Prepare/getMembersOfBand',
+                        response: memberResp,
+                    });
                     return;
                 }
 
