@@ -45,6 +45,8 @@ Stat 페이지에서는 [전달받은 데이터를 local 확장 프로그램 sto
 -   아이콘 폰트: [@fortawesome/fontawesome-svg-core](https://www.npmjs.com/package/@fortawesome/fontawesome-svg-core) (v6.6.0), [@fortawesome/free-solid-svg-icons](https://www.npmjs.com/package/@fortawesome/free-solid-svg-icons) (v6.6.0), [@fortawesome/react-fontawesome](https://www.npmjs.com/package/@fortawesome/react-fontawesome) (v0.2.2)
 -   밴드 API 사용을 위한 dependencies: [jquery](https://www.npmjs.com/package/jquery) (v3.7.1), [moment](https://www.npmjs.com/package/moment) (v2.30.1), [moment-timezone](https://www.npmjs.com/package/moment-timezone) (v0.5.45), [underscore](https://www.npmjs.com/package/underscore) (v1.13.6)
 -   차트 표시: [recharts](https://www.npmjs.com/package/recharts) (v2.13.3)
+-   그래프 표시
+    -   [react-graph-vis](https://www.npmjs.com/package/react-graph-vis) (v1.0.7): [vis-network](https://www.npmjs.com/package/vis-network)의 react wrapper
 -   요소 스타일링: [styled-components](https://www.npmjs.com/package/styled-components) (v6.1.12)
 -   사용자 선택을 위한 typeahead(자동 완성) 모듈: [react-typeahead](https://www.npmjs.com/package/react-typeahead) (v2.0.0-alpha.8)
 
@@ -70,4 +72,9 @@ Stat 페이지에서는 [전달받은 데이터를 local 확장 프로그램 sto
         -   [Javascript / URL Query String 가져오기](https://velog.io/@nnakki/Javascript-URL-Query-String-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0) by [Wintering](https://velog.io/@nnakki/posts)
         -   [Event when window.location.href changes](https://stackoverflow.com/a/46428962)
     -   [Generate random string/characters in JavaScript](https://stackoverflow.com/a/1349426)
--   https://github.com/recharts/recharts/issues/397
+    -   [[JS] 텍스트 복사(Copy) 완전 쉬운 방법: Clipboard API](https://curryyou.tistory.com/480)
+-   Recharts: [Some XAxis not showing](https://github.com/recharts/recharts/issues/397)
+-   [jsdoc에서 function type을 정의하는 방법](https://stackoverflow.com/a/60643856)
+-   HTML DOM
+    -   [Element.clientWidth](https://developer.mozilla.org/en-US/docs/Web/API/Element/clientWidth)
+    -   [&lt;details&gt;](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details#events)

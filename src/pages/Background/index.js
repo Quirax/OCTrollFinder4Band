@@ -10,7 +10,7 @@ messenger.addListener((message, sendResponse) => {
     sendResponse(`RESPONSE[Background]: ${JSON.stringify(message)}`);
 });
 
-// TODO: clear expired data from the local extension storage
+// Clear expired data from the local extension storage
 // ref: https://developer.chrome.com/docs/extensions/reference/api/storage
 const browser = getBrowser();
 
