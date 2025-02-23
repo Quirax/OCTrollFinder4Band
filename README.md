@@ -82,7 +82,7 @@ Original Character Community Troll Finder for Band (OCTrollFinder4Band)
 
 #### _(v1.2.0에서 추가)_ "Band와 통신하는 도중 오류가 발생하였습니다" 메시지가 표시됨
 
-![Band와 통신하는 도중 오류가 발생하였습니다](./docs/images/respond-with-error.png)
+!["Band와 통신하는 도중 오류가 발생하였습니다" 메시지가 표시됨](./docs/images/respond-with-error.png)
 
 Band 서버와 통신하는 도중 Band에서 오류 메시지를 보냈습니다. 밴드 페이지를 새로고침한 뒤 다시 시도합니다. 그래도 동일한 현상이 발생한다면, 팝업 하단의 오류 메시지를 복사한 뒤 개발자에게 보내주시기 바랍니다.
 
