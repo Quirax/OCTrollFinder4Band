@@ -26,6 +26,8 @@ export const TEST_FLAGS =
         : {
               BandInfoRespondWithError: false,
               MemberOfBandRespondWithError: false,
+              PostOfBandRespondWithError: false,
+              CommentsOfBandRespondWithError: false,
           };
 
 const container = document.getElementById('app-container');
