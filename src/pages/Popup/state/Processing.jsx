@@ -4,6 +4,8 @@ import { State } from '.';
 import { BottomButton } from '../common';
 import { useMessenger } from '../util';
 import { getBrowser } from '../../util';
+import { TEST_FLAGS } from '..';
+import { ErrorMessage } from './Error';
 
 const CancelButton = styled(BottomButton)`
     background-color: #aaa;
@@ -26,10 +28,11 @@ const processComments = (messenger, post, previousParams, commentId) =>
             messenger.Destination.Inject,
             { api: 'getComments', postNo: post.post_no, previousParams, commentId },
             (response) => {
-                if (response.result_code !== 1) {
-                    // TODO: 오류 처리
-                    console.error(response);
-                    return reject();
+                if (response.result_code !== 1 || TEST_FLAGS.CommentsOfBandRespondWithError) {
+                    return reject({
+                        at: 'Popup/Processing/getComments',
+                        response,
+                    });
                 }
 
                 (async () => {
@@ -79,22 +82,23 @@ const processFragment = async (messenger, fragment) => {
 };
 
 const processPosts = (messenger, after) =>
-    new Promise((resolve) =>
+    new Promise((resolve, reject) =>
         messenger.send(messenger.Destination.Inject, { api: 'getPosts', after }, (response) => {
-            (async () => {
-                if (response.result_code !== 1) {
-                    // TODO: 오류 처리
-                    console.error(response);
-                    return;
-                }
-
-                await processFragment(messenger, response.result_data.items);
-
-                resolve({
-                    after: response.result_data.paging.next_params?.after,
-                    max: response.result_data.items[0].post_no,
+            if (response.result_code !== 1 || TEST_FLAGS.PostOfBandRespondWithError) {
+                return reject({
+                    at: 'Popup/Processing/getPosts',
+                    response,
                 });
-            })();
+            }
+
+            processFragment(messenger, response.result_data.items)
+                .then(() => {
+                    resolve({
+                        after: response.result_data.paging.next_params?.after,
+                        max: response.result_data.items[0].post_no,
+                    });
+                })
+                .catch((err) => reject(err));
         })
     );
 
@@ -142,11 +146,26 @@ export const Processing = ({ transition, bandInfo }) => {
             if (!max) {
                 posts = [];
 
-                processPosts(messenger).then(({ after, max }) => {
-                    processAfter(after);
-                    setMax(max);
-                });
-            } else if (remain >= 0) processPosts(messenger, remain).then(({ after }) => processAfter(after));
+                processPosts(messenger)
+                    .then(({ after, max }) => {
+                        processAfter(after);
+                        setMax(max);
+                    })
+                    .catch((err) =>
+                        transition(State.Error, {
+                            message: ErrorMessage.RespondWithError,
+                            ...err,
+                        })
+                    );
+            } else if (remain >= 0)
+                processPosts(messenger, remain)
+                    .then(({ after }) => processAfter(after))
+                    .catch((err) =>
+                        transition(State.Error, {
+                            message: ErrorMessage.RespondWithError,
+                            ...err,
+                        })
+                    );
         },
         [max, remain]
     );
