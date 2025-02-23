@@ -20,6 +20,14 @@ const GlobalStyle = createGlobalStyle`
     }
 `;
 
+export const TEST_FLAGS =
+    process.env.NODE_ENV === 'production'
+        ? {}
+        : {
+              BandInfoRespondWithError: false,
+              MemberOfBandRespondWithError: false,
+          };
+
 const container = document.getElementById('app-container');
 const root = createRoot(container); // createRoot(container!) if you use TypeScript
 root.render(
