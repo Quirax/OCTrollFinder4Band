@@ -113,7 +113,11 @@ const CriteriaPanel = styled.details.attrs(
  * @type {ChartElement}
  */
 const Rechart = ({ $chartData = [], $chartOptions = {}, $criteria = {} }) => (
-    <ResponsiveContainer width="100%" height="100%" key={`${$criteria.isOpened}`}>
+    <ResponsiveContainer
+        width="100%"
+        height="100%"
+        key={`${$criteria.isOpened}`} // When criteria panel is opened or closed, recreate chart
+    >
         <ComposedChart data={$chartData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
