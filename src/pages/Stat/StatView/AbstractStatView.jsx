@@ -113,31 +113,25 @@ const CriteriaPanel = styled.details.attrs(
  * @type {ChartElement}
  */
 const Rechart = ({ $chartData = [], $chartOptions = {}, $criteria = {} }) => (
-    <ResponsiveContainer
-        width="100%"
-        height="100%"
-        // TODO: refactor
-        // TODO: fix height exceeding when criteria details is opened
-        children={
-            <ComposedChart data={$chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                    // ref: https://github.com/recharts/recharts/issues/397
-                    dataKey={$chartOptions.categoryKey || 'name'}
-                    {...($chartOptions.extendXAxis && {
-                        textAnchor: 'end',
-                        interval: 0,
-                        angle: -40,
-                        height: 100,
-                    })}
-                />
-                <YAxis />
-                <Tooltip />
-                <Legend verticalAlign="top" />
-                {SeriesView($chartOptions.series, $criteria.sort, $criteria.show)}
-            </ComposedChart>
-        }
-    />
+    <ResponsiveContainer width="100%" height="100%" key={`${$criteria.isOpened}`}>
+        <ComposedChart data={$chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+                // ref: https://github.com/recharts/recharts/issues/397
+                dataKey={$chartOptions.categoryKey || 'name'}
+                {...($chartOptions.extendXAxis && {
+                    textAnchor: 'end',
+                    interval: 0,
+                    angle: -40,
+                    height: 100,
+                })}
+            />
+            <YAxis />
+            <Tooltip />
+            <Legend verticalAlign="top" />
+            {SeriesView($chartOptions.series, $criteria.sort, $criteria.show)}
+        </ComposedChart>
+    </ResponsiveContainer>
 );
 
 /**
