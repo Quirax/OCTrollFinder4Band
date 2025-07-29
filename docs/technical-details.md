@@ -40,7 +40,6 @@ Stat 페이지에서는 [전달받은 데이터를 local 확장 프로그램 sto
 ## 사용 라이브러리
 
 -   Base Framework: [Quirax/chrome-확장 프로그램-boilerplate-react](https://github.com/Quirax/chrome-확장 프로그램-boilerplate-react) forked from [lxieyang/chrome-확장 프로그램-boilerplate-react](https://github.com/lxieyang/chrome-확장 프로그램-boilerplate-react)
-    -   [node-sass](https://www.npmjs.com/package/node-sass) (v8.0.0): https://github.com/Quirax/chrome-확장 프로그램-boilerplate-react/issues/1 적용
     -   [cross-env](https://www.npmjs.com/package/cross-env) (v7.0.3): [Production build를 위해 적용](https://github.com/Quirax/OCTrollFinder4Band/commit/52494ea92aa1ab4b3fb1f24b0f2389d137f1ea8e)
 -   아이콘 폰트: [@fortawesome/fontawesome-svg-core](https://www.npmjs.com/package/@fortawesome/fontawesome-svg-core) (v6.6.0), [@fortawesome/free-solid-svg-icons](https://www.npmjs.com/package/@fortawesome/free-solid-svg-icons) (v6.6.0), [@fortawesome/react-fontawesome](https://www.npmjs.com/package/@fortawesome/react-fontawesome) (v0.2.2)
 -   밴드 API 사용을 위한 dependencies: [jquery](https://www.npmjs.com/package/jquery) (v3.7.1), [moment](https://www.npmjs.com/package/moment) (v2.30.1), [moment-timezone](https://www.npmjs.com/package/moment-timezone) (v0.5.45), [underscore](https://www.npmjs.com/package/underscore) (v1.13.6)
