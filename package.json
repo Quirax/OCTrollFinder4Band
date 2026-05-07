@@ -1,6 +1,6 @@
 {
     "name": "OCTrollFinder4Band",
-    "version": "1.2.3",
+    "version": "1.2.5",
     "description": "A chrome extension to find trolls in OC community on Band",
     "license": "MIT",
     "repository": {
@@ -25,7 +25,8 @@
         "react-typeahead": "^2.0.0-alpha.8",
         "recharts": "^2.15.4",
         "styled-components": "^6.1.19",
-        "underscore": "^1.13.7"
+        "underscore": "^1.13.7",
+        "uuid": "^11.1.1"
     },
     "devDependencies": {
         "@babel/core": "^7.28.0",
@@ -40,7 +41,7 @@
         "babel-loader": "^9.2.1",
         "babel-preset-react-app": "^10.1.0",
         "clean-webpack-plugin": "^4.0.0",
-        "copy-webpack-plugin": "^11.0.0",
+        "copy-webpack-plugin": "^14.0.0",
         "cross-env": "^7.0.3",
         "css-loader": "^6.11.0",
         "eslint": "^8.57.1",
