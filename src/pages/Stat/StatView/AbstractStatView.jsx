@@ -267,7 +267,7 @@ export const createStatView = (title, description, chartOptions = {}, chartDataG
             sort: 'name',
             reverse: false,
             since: sinceToDate(data.bandInfo.since),
-            until: new Date(Math.max(...Object.values(data.bandInfo.updated_at_status))),
+            until: new Date(data.ts),
             show: Object.fromEntries(chartOptions.series.map((series) => [series.key, true])),
             userlist: [],
             isUserlistForExclude: false,
